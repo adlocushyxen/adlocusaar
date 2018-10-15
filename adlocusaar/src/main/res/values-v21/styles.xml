@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="bv_text_title" parent="@android:style/TextAppearance.Material.Notification.Title" />
+
+    <style name="bv_text_content" parent="@android:style/TextAppearance.Material.Notification" />
+</resources>

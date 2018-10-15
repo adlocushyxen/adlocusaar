@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">AdLocusAar</string>
+
+    <!-- Common -->
+    <string name="common_error_unexpected">不可預期的錯誤</string>
+    <string name="common_error_unexpected_response">資料解析錯誤</string>
+    <string name="common_error_server">伺服器錯誤</string>
+    <string name="common_error_no_network">網路連線中斷</string>
+    <string name="common_error_time_out">連線逾時</string>
+    <string name="common_error_json_parse">JsonParse錯誤</string>
+
+    <string name="common_grant">同意</string>
+    <string name="common_denied">拒絕</string>
+
+    <!-- AdLocusActivity -->
+    <string name="ad_locus_activity_loading">讀取中...</string>
+
+    <!-- Statement -->
+    <string name="statement_message">我們將使用您的Android ID 作為識別使用，請問是否同意</string>
+</resources>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <drawable name="color_bigview_btn_bg_normal">#00000000</drawable>
+    <drawable name="color_bigview_btn_bg_click">#80000000</drawable>
+    <color name="color_bigview_setting_text_black">#262626</color>
+    <color name="color_bigview_setting_text_red">#d0111b</color>
+    <color name="color_bigview_setting_text_grey">#7e7e7e</color>
+    <color name="color_bigview_setting_text_click">#bdbdbd</color>
+</resources>

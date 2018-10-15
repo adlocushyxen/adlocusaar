@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_257sdp">
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_64sdp"
+            android:paddingLeft="@dimen/_8sdp"
+            android:paddingRight="@dimen/_8sdp">
+
+            <ImageView
+                android:id="@+id/b_imageview_icon"
+                android:layout_width="@dimen/_48sdp"
+                android:layout_height="@dimen/_48sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:scaleType="centerInside" />
+
+            <TextView
+                android:id="@+id/b_textview_title"
+                style="@style/bv_text_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/_56sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:text="title" />
+
+            <TextView
+                android:id="@+id/b_textview_subtitle"
+                style="@style/bv_text_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/b_textview_title"
+                android:layout_marginLeft="@dimen/_56sdp"
+                android:singleLine="true"
+                android:text="subtitle" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/b_content"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_192sdp"
+            android:layout_marginTop="@dimen/_65sdp">
+
+            <ImageView
+                android:id="@+id/b_imageview_bigimage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_42sdp"
+                android:layout_alignParentBottom="true"
+                android:background="@drawable/btn_bg"
+                android:paddingLeft="@dimen/_8sdp"
+                android:paddingRight="@dimen/_8sdp">
+
+                <TextView
+                    android:id="@+id/b_button_setting"
+                    style="@style/bigview_func_btn_style"
+                    android:drawableStart="@drawable/btn_icon_set"
+                    android:gravity="center"
+                    android:text="設 定" />
+
+                <ImageView style="@style/bigview_seperate_line_style" />
+
+                <TextView
+                    android:id="@+id/b_button_look"
+                    style="@style/bigview_func_btn_style"
+                    android:drawableStart="@drawable/btn_icon_view"
+                    android:gravity="center"
+                    android:text="觀 看" />
+
+                <ImageView style="@style/bigview_seperate_line_style" />
+
+                <TextView
+                    android:id="@+id/b_button_share"
+                    style="@style/bigview_func_btn_style"
+                    android:drawableStart="@drawable/btn_icon_share"
+                    android:gravity="center"
+                    android:text="分 享" />
+            </LinearLayout>
+        </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>

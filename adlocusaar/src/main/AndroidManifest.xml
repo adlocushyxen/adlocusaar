@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.hyxen.adlocusaar">
+
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature android:name="android.hardware.location.gps" />
+
+    <application>
+        <activity android:name=".view.BaseActivity" />
+        <activity
+            android:name=".view.main.AdLocusActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask" />
+
+        <receiver android:name=".utils.CheckLbsReceiver">
+            <intent-filter>
+                <action android:name="check_lbs" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name=".util.MultiProcessPreferences"
+            android:authorities="${applicationId}.ADLOCUS_CONTENT"
+            android:exported="false" />
+
+        <activity
+            android:name=".AdActivity"
+            android:excludeFromRecents="true"
+            android:launchMode="singleTask"
+            android:theme="@style/AdLocusDialogTheme"></activity>
+        <activity
+            android:name=".VideoAdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:hardwareAccelerated="true"
+            android:launchMode="singleTask"></activity>
+
+        <service
+            android:name=".push.PushService"
+            android:process=":adlocus"></service>
+        <service android:name=".geofence.GeofenceService" />
+
+        <receiver
+            android:name=".push.PushReceive"
+            android:enabled="true"
+            android:process=":adlocus">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.adlocus.action.RECEIVE" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".push.PushJobService"
+            android:process=":adlocus"
+            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
+    </application>
+
+</manifest>
