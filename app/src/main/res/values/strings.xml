@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">AdLocus</string>
+
+    <string name="app_key">a52f5fb66b6c2fc730f19953031a2877631bb09d</string>
+    <string name="fcm_app_key">AAAARDrb3XY:APA91bEtU4VAwfvCLxoHZj7Brvhipat4Pw2NhnMWJWT24n-s8Rnc-JDH8IbFsHrO-lk-MBkzJkBJuaPtzQmKOws4AgIQq0EKmreteUHp2IvaVjMHW7J9zTPKxu7eSJtvfHfLpXB1Dh35</string>
+</resources>
