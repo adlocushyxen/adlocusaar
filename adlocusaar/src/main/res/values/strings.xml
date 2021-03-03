@@ -11,10 +11,15 @@
 
     <string name="common_grant">同意</string>
     <string name="common_denied">拒絕</string>
+    <string name="ssl_error">SSL 憑證錯誤</string>
+    <string name="is_ssl_error_continue">無法驗證伺服器SSL憑證。
+點擊繼續</string>
+    <string name="ssl_error_ok">繼續</string>
+    <string name="ssl_error_cancel">取消</string>
 
     <!-- AdLocusActivity -->
     <string name="ad_locus_activity_loading">讀取中...</string>
 
     <!-- Statement -->
-    <string name="statement_message">我們將使用您的Android ID 作為識別使用，請問是否同意</string>
+    <string name="statement_message">為了更佳的使用者體驗，我們將使用您的Android ID及網路卡識別碼作為識別使用，請問您是否同意?</string>
 </resources>

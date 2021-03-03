@@ -26,6 +26,9 @@ public class Constants {
     public static final String TAG_LAT = "lat";
     public static final String TAG_LON = "lon";
     public static final String TAG_RSSI = "rssi";
+    public static final String TAG_CELL_TYPE = "cell_type";
+    public static final String TAG_LOC_TYPE = "loc_type";
+
 
     public static final String TAG_AD_TYPE_LIMIT = "0"; // 廣告已達標
     public static final String TAG_AD_TYPE_ICON = "1"; // 文 + icon

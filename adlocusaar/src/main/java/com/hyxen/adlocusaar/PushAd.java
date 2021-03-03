@@ -176,7 +176,7 @@ public class PushAd
         rootLayout.addView(tv, lp);
         dialog.setContentView(rootLayout);
         
-        webView.loadUrl(String.format("http://user.ad-locus.com/pref/set?device_id=%s&app_key=%s", AdLocusUtil.getEncodedDeviceId(activity), appKey));
+        webView.loadUrl(String.format("https://user.ad-locus.com/pref/set?device_id=%s&app_key=%s", AdLocusUtil.getEncodedDeviceId(activity), appKey));
 
         dialog.show();
     }

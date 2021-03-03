@@ -102,6 +102,12 @@ public class NewAndRequest {
     //手機GPS的精準度
     @JsonField
     private String la;
+    //手機網路訊號格式
+    @JsonField
+    private String cellType;
+    //手機定位方式 gps or wifi
+    @JsonField
+    private String locType;
 
     public String getAdId() {
         return adId;
@@ -349,5 +355,21 @@ public class NewAndRequest {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
+    }
+
+    public String getCellType() {
+        return cellType;
+    }
+
+    public void setCellType(String cellType) {
+        this.cellType = cellType;
+    }
+
+    public String getLocType() {
+        return locType;
+    }
+
+    public void setLocType(String locType) {
+        this.locType = locType;
     }
 }

@@ -41,12 +41,12 @@ public class HxRequestService extends HxRequest
 
 	public HxRequestService(Context context, String host, String uri)
 	{
-		super(context, String.format("http://%s/%s/%s", host, uri, AdLocusUtil.getPushKey(context)));
+		super(context, String.format("https://%s/%s/%s", host, uri, AdLocusUtil.getPushKey(context)));
 	}
 
 	public HxRequestService(Context context, String host, String uri, String uri2)
 	{
-		super(context, String.format("http://%s/%s/%s/%s", host, uri, AdLocusUtil.getPushKey(context), uri2));
+		super(context, String.format("https://%s/%s/%s/%s", host, uri, AdLocusUtil.getPushKey(context), uri2));
 	}
 
 	public HxRequestService setPostContent(String content)

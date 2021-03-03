@@ -78,11 +78,11 @@ public class AdLocusUtil
 	private static final String PREFERENCE_TARGETING = "targeting";
 
 //	private static final String HOST_RD = "http://hyxen-adlocus-api.rd.hyxencloud.com/";
-	private static final String HOST_RD = "http://paul.adlocus_api.dev.hxcld.com/";
-	private static final String HOST_ADLOCUS = "http://a.api.ad-locus.com/";
+	private static final String HOST_RD = "https://paul.adlocus_api.dev.hxcld.com/";
+	private static final String HOST_ADLOCUS = "https://a.api.ad-locus.com/";
 
-	private static final String HOST_DATA_RD = "http://data.rd.adlocus.com/";
-	private static final String HOST_DATA_ADLOCUS = "http://data.adlocus.com/";
+	private static final String HOST_DATA_RD = "https://data.rd.adlocus.com/";
+	private static final String HOST_DATA_ADLOCUS = "https://data.adlocus.com/";
 
 	private static final String REDIRECTS_CHECK_URL_RD = "hyxencloud.com";
 	private static final String REDIRECTS_CHECK_URL_ADLOCUS = "ad-locus.com";
@@ -123,7 +123,8 @@ public class AdLocusUtil
 	public static final String URL_PUSH_IMP_NEW = HOST + "devpush/newimp";
 
 	public static final String URL_BIGVIEW_FEEDBACK = HOST + "bigview/feedback";
-	public static final String URL_DATA_COLLECTION = HOST_DATA + "log/device";
+//	public static final String URL_DATA_COLLECTION = HOST_DATA + "log/device";
+public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device";
 
 	public static final String ADLOCUS = "AdLocus SDK";
 

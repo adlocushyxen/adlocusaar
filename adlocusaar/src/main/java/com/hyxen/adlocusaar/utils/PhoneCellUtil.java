@@ -16,11 +16,13 @@ import android.telephony.CellInfoCdma;
 import android.telephony.CellInfoGsm;
 import android.telephony.CellInfoLte;
 import android.telephony.CellInfoWcdma;
+import android.telephony.CellLocation;
 import android.telephony.CellSignalStrengthCdma;
 import android.telephony.CellSignalStrengthGsm;
 import android.telephony.CellSignalStrengthLte;
 import android.telephony.CellSignalStrengthWcdma;
 import android.telephony.TelephonyManager;
+import android.telephony.cdma.CdmaCellLocation;
 import android.telephony.gsm.GsmCellLocation;
 import android.text.TextUtils;
 
@@ -34,20 +36,74 @@ public class PhoneCellUtil {
     private static Context ctx;
 
     private TelephonyManager mTelephonyManager;
-    private GsmCellLocation location;
+    private CellLocation location;
 
     public PhoneCellUtil(Context context) {
         mContextRef = new WeakReference<Context>(context);
         ctx=context;
 
         mTelephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-            location = (GsmCellLocation) mTelephonyManager.getCellLocation();
+//        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            try{
+//                location = (GsmCellLocation) mTelephonyManager.getCellLocation();
+//            }catch(Exception e){e.printStackTrace();}
+//        } else {
+//            Logger.e(TAG, "[PhoneCellUtil] User not granted permission");
+//        }
+
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            try{
+                location = mTelephonyManager.getCellLocation();
+            }catch(Exception e){e.printStackTrace();}
         } else {
             Logger.e(TAG, "[PhoneCellUtil] User not granted permission");
         }
+
+    }
+
+    public String getCellType() {
+        int networkType=mTelephonyManager.getNetworkType();
+        int phoneType =mTelephonyManager.getPhoneType();
+        String mType="";
+        switch (networkType)
+        {
+            case TelephonyManager.NETWORK_TYPE_CDMA:
+            case TelephonyManager.NETWORK_TYPE_EVDO_0:
+            case TelephonyManager.NETWORK_TYPE_EVDO_A:
+            case 12:
+            case TelephonyManager.NETWORK_TYPE_1xRTT:
+                mType = "c";
+                break;
+            case TelephonyManager.NETWORK_TYPE_GPRS:
+            case TelephonyManager.NETWORK_TYPE_EDGE:
+                mType = "g";
+                break;
+            case TelephonyManager.NETWORK_TYPE_HSDPA:
+            case TelephonyManager.NETWORK_TYPE_HSPA:
+            case TelephonyManager.NETWORK_TYPE_HSPAP:
+            case TelephonyManager.NETWORK_TYPE_HSUPA:
+            case TelephonyManager.NETWORK_TYPE_UMTS:
+                mType = "w";
+                break;
+            case 13:
+                mType = "e";
+                break;
+            default:
+                if(phoneType == TelephonyManager.PHONE_TYPE_CDMA)
+                {
+                    mType = "c";
+                }
+                else if(phoneType == TelephonyManager.PHONE_TYPE_GSM)
+                {
+                    mType = "g";
+                }
+                break;
+        }
+        return mType;
     }
 
     public String getCid() {
@@ -56,7 +112,20 @@ public class PhoneCellUtil {
             Logger.i(TAG, "[getCid] -> location is null");
             return "";
         }
-        return String.valueOf(location.getCid());
+//        return String.valueOf(location.getCid());
+
+        if(mTelephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM){
+            if (location instanceof GsmCellLocation){
+                GsmCellLocation gsm = (GsmCellLocation) location;
+                return String.valueOf(gsm.getCid());
+            }
+        }else if(mTelephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA){
+            if (location instanceof CdmaCellLocation){
+                CdmaCellLocation cdma = (CdmaCellLocation) location;
+                return String.valueOf(cdma.getBaseStationId());
+            }
+        }
+        return "";
     }
 
     public String getLac() {
@@ -65,7 +134,20 @@ public class PhoneCellUtil {
             Logger.i(TAG, "[getLac] -> location is null");
             return "";
         }
-        return String.valueOf(location.getLac());
+//        return String.valueOf(location.getLac());
+
+        if(mTelephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_GSM){
+            if (location instanceof GsmCellLocation){
+                GsmCellLocation gsm = (GsmCellLocation) location;
+                return String.valueOf(gsm.getLac());
+            }
+        }else if(mTelephonyManager.getPhoneType() == TelephonyManager.PHONE_TYPE_CDMA){
+            if (location instanceof CdmaCellLocation){
+                CdmaCellLocation cdma = (CdmaCellLocation) location;
+                return String.valueOf(cdma.getNetworkId());
+            }
+        }
+        return "";
     }
 
     public String getMcc() {
@@ -102,12 +184,16 @@ public class PhoneCellUtil {
         if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return Mrssi+"";
         }
-        List<CellInfo> cellInfo = mTelephonyManager.getAllCellInfo();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            Mrssi=newCellFromNewApi_JB_MR2(cellInfo);
-        } else {
-            Mrssi=newCellFromNewApi_JB_MR1(cellInfo);
+//        List<CellInfo> cellInfo = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            List<CellInfo> cellInfo = mTelephonyManager.getAllCellInfo();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                Mrssi=newCellFromNewApi_JB_MR2(cellInfo);
+            } else {
+                Mrssi=newCellFromNewApi_JB_MR1(cellInfo);
+            }
         }
+
 //        CellInfoGsm cellinfogsm = (CellInfoGsm) mTelephonyManager.getAllCellInfo().get(0);
 //        CellSignalStrengthGsm cellSignalStrengthGsm = cellinfogsm.getCellSignalStrength();
 //        int Mrssi = cellSignalStrengthGsm.getDbm();

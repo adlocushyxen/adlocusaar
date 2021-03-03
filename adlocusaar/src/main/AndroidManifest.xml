@@ -5,13 +5,14 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!--<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />-->
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-    <uses-feature android:name="android.hardware.location.gps" />
 
+
+    <!-- <uses-feature android:name="android.hardware.location.gps" /> -->
     <application>
         <activity android:name=".view.BaseActivity" />
         <activity
@@ -34,16 +35,16 @@
             android:name=".AdActivity"
             android:excludeFromRecents="true"
             android:launchMode="singleTask"
-            android:theme="@style/AdLocusDialogTheme"></activity>
+            android:theme="@style/AdLocusDialogTheme" />
         <activity
             android:name=".VideoAdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:hardwareAccelerated="true"
-            android:launchMode="singleTask"></activity>
+            android:launchMode="singleTask" />
 
         <service
             android:name=".push.PushService"
-            android:process=":adlocus"></service>
+            android:process=":adlocus" />
         <service android:name=".geofence.GeofenceService" />
 
         <receiver
@@ -62,8 +63,18 @@
 
         <service
             android:name=".push.PushJobService"
-            android:process=":adlocus"
-            android:permission="android.permission.BIND_JOB_SERVICE" ></service>
+            android:permission="android.permission.BIND_JOB_SERVICE"
+            android:process=":adlocus" />
+
+        <receiver
+            android:name=".push.alarm.clock.PushAlarmReceiver"
+            android:enabled="true"
+            android:exported="true"
+            ><!-- android:process=":adlocus.alarm.clock" -->
+            <intent-filter>
+                <action android:name="com.hyxen.adlocusaar.push.PushAlarm" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

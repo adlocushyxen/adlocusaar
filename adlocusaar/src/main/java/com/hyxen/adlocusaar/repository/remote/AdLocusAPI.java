@@ -49,8 +49,8 @@ public class AdLocusAPI extends RemoteAPI {
 //                "todo";
 
         String url = AdLocus.isDebug() ?
-                "http://test.adlocus_api.dev.hxcld.com/" :
-                "http://a.api.ad-locus.com/";
+                "https://test.adlocus_api.dev.hxcld.com/" :
+                "https://a.api.ad-locus.com/";
         OkHttpClient client = getOkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -108,7 +108,8 @@ public class AdLocusAPI extends RemoteAPI {
                 .addFormDataPart(Constants.TAG_KEY, request.getKey())
                 .addFormDataPart(Constants.TAG_PLAIN, request.getPlain())
                 .build();
-        return mService.postCollection("https://data.adlocus.com/log/device",requestBody);
+        return mService.postCollection("https://data.adlocus.com/new_log/and_device",requestBody);
+//        return mService.postCollection("https://data.adlocus.com/log/device",requestBody);
     }
     public Single<GetNewAndResponse> postNewAnd(NewAndRequest request) {
         Logger.i(TAG, "[Method] -> postNewAnd()");
@@ -134,6 +135,9 @@ public class AdLocusAPI extends RemoteAPI {
                 .addFormDataPart(Constants.TAG_LAT, request.getLat())
                 .addFormDataPart(Constants.TAG_LON, request.getLon())
                 .addFormDataPart(Constants.TAG_RSSI, request.getRssi())
+                .addFormDataPart(Constants.TAG_CELL_TYPE, request.getCellType())
+                .addFormDataPart(Constants.TAG_LOC_TYPE, request.getLocType())
+
                 .build();
         return mService.postNewAnd(requestBody);
     }
@@ -166,6 +170,8 @@ public class AdLocusAPI extends RemoteAPI {
                 .addFormDataPart(Constants.TAG_V_STR, request.getvStr())
                 .addFormDataPart(Constants.TAG_LAT, lat)
                 .addFormDataPart(Constants.TAG_LON, lon)
+                .addFormDataPart(Constants.TAG_CELL_TYPE, request.getCellType())
+                .addFormDataPart(Constants.TAG_LOC_TYPE, request.getLocType())
                 .addFormDataPart(Constants.TAG_RSSI, request.getRssi())
                 .build();
 

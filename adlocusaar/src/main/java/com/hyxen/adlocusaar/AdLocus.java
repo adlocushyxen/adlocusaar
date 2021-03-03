@@ -1,16 +1,23 @@
 package com.hyxen.adlocusaar;
 
-import android.app.AlarmManager;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
-import android.content.ComponentName;
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
-import com.hyxen.adlocusaar.BuildConfig;
+
 import com.hyxen.adlocusaar.constants.Constants;
-import com.hyxen.adlocusaar.push.PushJobService;
+import com.hyxen.adlocusaar.push.alarm.clock.PushAlarm;
 import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.repository.data.request.PushTokenRequest;
 import com.hyxen.adlocusaar.repository.data.response.GetFCMDataResponse;
@@ -18,13 +25,19 @@ import com.hyxen.adlocusaar.utils.AdLocusUtil;
 import com.hyxen.adlocusaar.utils.Logger;
 
 import java.lang.ref.WeakReference;
+import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
 public class AdLocus extends AdLocusHelp implements IAdLocus {
     private static final String TAG = AdLocus.class.getSimpleName();
+    private static final String KEY_SAVE_API_DEBUG = "KEY_SAVE_API_DEBUG";
+    private static final String KEY_SAVE_ALARM_DEBUG = "KEY_SAVE_ALARM_DEBUG";
+    private static final String KEY_SAVE_ALARM_BOT_DEBUG = "KEY_SAVE_ALARM_BOT_DEBUG";
 
     private static AdLocus mInstance;
     private static WeakReference<Context> mContextRef;
@@ -34,6 +47,9 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
     private String mAppPackageName;
     private static String mAppKey;
     private static boolean debug=BuildConfig.DEBUG;
+    private static boolean debug_alarm=BuildConfig.DEBUG;
+    private static boolean debug_alarm_send_bot=BuildConfig.DEBUG;
+    public static Location gpsLocation;
 
     public static AdLocus getInstance() {
         if (mInstance == null)
@@ -120,10 +136,11 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
             return;
         }
         Repository.init(context);
-
+        PushAlarm.setFcmRecever(context,System.currentTimeMillis());//設定Alarm定期回訪
         GetFCMDataResponse response = GetFCMDataResponse.getInstance();
         response.parseHash(fcmMessage);
 
+//        startGpsLocation();
         /*
         Constants.TAG_FCM_LC:判斷此FCM是LBS廣告要去拉取SQL file
         Constants.TAG_FCM_GA:判斷此FCM是全區廣告走推播流程
@@ -137,6 +154,9 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
         } else if (TextUtils.equals(response.getType(), Constants.TAG_FCM_TEST)) {
             testMode(context);
         }
+
+
+
     }
 
     @Override
@@ -228,18 +248,151 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
         })) {
             registerApp();
         }
+        PushAlarm.startPushAlarmFromInit(context);//設定Alarm定期回訪
     }
 
     public static boolean isDebug() {
         return debug;
     }
+    public static boolean isDebug(Context ctx) {
+        if (ctx != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            debug = pref.getBoolean(KEY_SAVE_API_DEBUG, false);
+        }
+        return debug;
+    }
 
-    public AdLocus setDebug(boolean debug) {
+    public static AdLocus setDebug(Context ctx,boolean debug) {
         AdLocus.debug = debug;
+        if(ctx!=null){
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            pref.edit().putBoolean(KEY_SAVE_API_DEBUG, debug).apply();
+        }
         return getInstance();
     }
 
+    public static boolean isAlarmDebug() {
+        return debug_alarm;
+    }
+    public static boolean isAlarmDebug(Context ctx) {
+        if (ctx != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            debug_alarm = pref.getBoolean(KEY_SAVE_ALARM_DEBUG, false);
+        }
+        return debug_alarm;
+    }
+    public static AdLocus setAlarmDebug(Context ctx,boolean debug) {
+        AdLocus.debug_alarm = debug;
+        if (ctx != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            pref.edit().putBoolean(KEY_SAVE_ALARM_DEBUG, debug).apply();
+        }
+        return getInstance();
+    }
+
+
+    public static boolean isAlarmBotDebug() {
+        return debug_alarm_send_bot;
+    }
+    public static boolean isAlarmBotDebug(Context ctx) {
+        if (ctx != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            debug_alarm_send_bot = pref.getBoolean(KEY_SAVE_ALARM_BOT_DEBUG, false);
+        }
+        return debug_alarm_send_bot;
+    }
+    public static AdLocus setAlarmBotDebug(Context ctx,boolean debug) {
+        AdLocus.debug_alarm_send_bot = debug;
+        if (ctx != null) {
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            pref.edit().putBoolean(KEY_SAVE_ALARM_BOT_DEBUG, debug).apply();
+        }
+        return getInstance();
+    }
+
+    public static void startGpsLocation(){
+        gpsLocation=null;
+        if(mContextRef!=null && mContextRef.get()!=null){
+            final LocationManager locationManager = (LocationManager) mContextRef.get().getSystemService(Context.LOCATION_SERVICE);
+            if(locationManager==null)return;
+            List<String> providers = locationManager.getProviders(true);
+            if(providers==null)return;
+            if(providers.contains(LocationManager.GPS_PROVIDER) && ActivityCompat.checkSelfPermission(mContextRef.get(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                final LocationListener l=new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        gpsLocation=location;
+                    }
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {}
+                    @Override
+                    public void onProviderEnabled(String provider) {}
+                    @Override
+                    public void onProviderDisabled(String provider) {}
+                };
+                Looper.prepare();
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, l);
+                Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        locationManager.removeUpdates(l);
+                    }
+                }, 3000);
+            }
+        }
+    }
+
+
+
+
+    public static void clearDebug(Context ctx) {
+        if (ctx != null) {
+            debug_alarm=false;
+            debug=false;
+            debug_alarm_send_bot=false;
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(ctx);
+            pref.edit().remove(KEY_SAVE_API_DEBUG).apply();
+            pref.edit().remove(KEY_SAVE_ALARM_DEBUG).apply();
+            pref.edit().remove(KEY_SAVE_ALARM_BOT_DEBUG).apply();
+        }
+    }
+
+
     public static String getmAppKey() {
         return mAppKey;
+    }
+    public void receverAlarmAD(Context context,ConcurrentHashMap<String ,TreeMap<String,String>> map){
+        if(map.size()>0){
+            for(Map.Entry<String ,TreeMap<String,String>>entry:map.entrySet()){
+                TreeMap<String,String> dataMap=entry.getValue();
+                String []ad_ids=new String[dataMap.size()];
+                String []session_ids=new String[dataMap.size()];
+                int i=0;
+                for(Map.Entry<String,String>entryAd:dataMap.entrySet()){
+//                    String ad_id=entryAd.getKey();
+//                    String session_id=entryAd.getValue();
+                    ad_ids[i]=entryAd.getKey();
+                    session_ids[i]=entryAd.getValue();
+                    i++;
+                }
+                if (TextUtils.equals(entry.getKey(), Constants.TAG_FCM_LC)) {
+//                    getLbsFile(context);
+                } else if (TextUtils.equals(entry.getKey(), Constants.TAG_FCM_GA)) {
+                    getAdLocationStep( context,   ad_ids,  session_ids);
+                } else if (TextUtils.equals(entry.getKey(), Constants.TAG_FCM_TEST)) {
+//                    testMode(context);
+                }
+            }
+        }
+    }
+    public void receverAlarmAD(Context context,String Type,String sid,String ad){
+        if (TextUtils.equals(Type, Constants.TAG_FCM_LC)) {
+            getLbsFile(context);
+        } else if (TextUtils.equals(Type, Constants.TAG_FCM_GA)) {
+            postNewAnd(context, ad, sid);
+        } else if (TextUtils.equals(Type, Constants.TAG_FCM_TEST)) {
+            testMode(context);
+        }
     }
 }

@@ -236,7 +236,7 @@ public final class PushService extends Service
 				ad.image = AdLocusUtil.getAssetsBitmap(PushService.this, "banner_320");
 				ad.id = "-1";
 				ad.leftImageType = (int)(Math.random() * 8) + 1;
-				ad.link = "http://ad-locus.com";
+				ad.link = "https://ad-locus.com";
 				ad.linkType = AdLocusUtil.LINK_TYPE_URL;
 				ad.description = "AdLocus 行動廣告平台(測試廣告)";
 				ad.clickType = 1;
@@ -248,7 +248,7 @@ public final class PushService extends Service
 				AdLocusNotification.showNotification(PushService.this, ad);
 				if (AdLocusUtil.getNewPushBackgroundIntent(PushService.this) != null) {
 					ad.scad_txt = "新訊息！";
-					ad.scad_url = "http://emaico.rd.hyxencloud.com/fullad/300x250-02.gif";
+					ad.scad_url = "https://emaico.rd.hyxencloud.com/fullad/300x250-02.gif";
 					ad.id = "-3";
 					AdLocusNotification.showNotification(PushService.this, ad);
 				}

@@ -26,6 +26,7 @@ import com.hyxen.adlocusaar.repository.remote.RemoteAPI;
 import com.hyxen.adlocusaar.utils.AdLocusUtil;
 import com.hyxen.adlocusaar.utils.Logger;
 import com.hyxen.adlocusaar.utils.MiscUtils;
+import com.hyxen.adlocusaar.utils.PhoneCellUtil;
 
 import java.lang.ref.WeakReference;
 import java.net.ConnectException;
@@ -302,7 +303,7 @@ public class Repository {
                     pref.edit().putString(KEY_GOOGLE_AD_ID, AdLocusUtil.getAndGoogleADID(context)).apply();
                 }
                 if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MAC))
-                    pref.edit().putString(KEY_DEVICE_MAC, AdLocusUtil.getMac(context)).apply();
+                    pref.edit().putString(KEY_DEVICE_MAC, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ?AdLocusUtil.getMac(context):"no_access").apply();
                 if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MODEL))
                     pref.edit().putString(KEY_DEVICE_MODEL, Build.MODEL).apply();
                 if (MiscUtils.checkSharedStringIsEmpty(context, KEY_APP_PACKAGE_NAME) && !TextUtils.isEmpty(pushTokenData.getAppPackageName()))
@@ -363,6 +364,7 @@ public class Repository {
             return null;
         }
         context = mContextRef.get();
+        PhoneCellUtil cgi = new PhoneCellUtil(context);
 
         PushTokenRequest result = new PushTokenRequest();
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -374,6 +376,9 @@ public class Repository {
         result.setDeviceModel(pref.getString(KEY_DEVICE_MODEL, ""));
         result.setFcmAppKey(pref.getString(KEY_FCM_APP_KEY, ""));
         result.setAppPackageName(pref.getString(KEY_APP_PACKAGE_NAME, ""));
+        result.setMcc(cgi.getMcc());
+        result.setMnc(cgi.getMnc());
+        result.setD_ad_id(AdLocusUtil.getEncodedGoogleADId(context));
         return result;
     }
 
@@ -726,6 +731,9 @@ public class Repository {
                                 result = (ApiException) throwable;
                             } else if (throwable instanceof HttpException) {
                                 Logger.e(TAG, "HttpException!");
+//                                HttpException error = (HttpException) throwable;
+//                                error.code();
+//                                String s=error.response().errorBody().string();
 
                                 result = new ApiException(ApiStatus.NO_NETWORK, context.getString(R.string.common_error_server));
                             } else if (throwable instanceof SocketTimeoutException) {

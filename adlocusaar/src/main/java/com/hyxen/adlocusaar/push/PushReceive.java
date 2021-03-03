@@ -1,16 +1,9 @@
 package com.hyxen.adlocusaar.push;
 
-import java.util.Random;
-
-import com.hyxen.adlocusaar.util.AdLocusUtil;
+import com.hyxen.adlocusaar.push.alarm.clock.PushAlarm;
 import com.hyxen.adlocusaar.util.Log;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.app.job.JobInfo;
-import android.app.job.JobScheduler;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 
@@ -26,7 +19,9 @@ public class PushReceive extends BroadcastReceiver  //time-up bot, call ad to go
         Log.d("onReceive action:" + action + "," + context.getPackageName());
 
 
-
+		if(Intent.ACTION_BOOT_COMPLETED.equals(action)) {
+			PushAlarm.startPushAlarmFromReboot(context);//設定Alarm定期回訪
+		}
 
 //		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 //			JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);

@@ -239,9 +239,11 @@ public class AdLocusUtil {
                 }
                 try{
                     Activity act=((Activity) context);
-                    if(!act.isFinishing() && !act.isDestroyed()){
-                        mStatementDialog.show();
-                        return true;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                        if(!act.isFinishing() && !act.isDestroyed()){
+                            mStatementDialog.show();
+                            return true;
+                        }
                     }
                 }catch(Exception e){}
             }
@@ -325,15 +327,16 @@ public class AdLocusUtil {
 
         }
         try{
-            if (versionCode >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                try {
+            try {
+                if (versionCode >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)  {
                     userAgent = WebSettings.getDefaultUserAgent(context);
-                } catch (Exception e) {
+                } else {
                     userAgent = System.getProperty("http.agent");
                 }
-            } else {
+            } catch (Exception e) {
                 userAgent = System.getProperty("http.agent");
             }
+
             StringBuffer sb = new StringBuffer();
             for (int i = 0, length = userAgent.length(); i < length; i++) {
                 char c = userAgent.charAt(i);

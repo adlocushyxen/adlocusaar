@@ -10,6 +10,7 @@ import com.hyxen.adlocusaar.net.HxRequest;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 import com.hyxen.adlocusaar.util.Base64;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.hyxen.adlocusaar.utils.RSAUtils;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -50,20 +51,46 @@ public class Collection extends HxRequest {
     @Override
     public void run() {
         try {
+            String key=
+                "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+                "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+                "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+                "6HQFQ5txU/SgC1vOrwIDAQAB\n" ;
+            byte[] publicBytes = com.hyxen.adlocusaar.utils.Base64.decode(key, com.hyxen.adlocusaar.utils.Base64.DEFAULT);
+
             JSONObject o = new JSONObject();
             o.put("mcc", getMcc());
             o.put("mnc", getMnc());
-            o.put("lang", Locale.getDefault().toString());
-            o.put("mac", AdLocusUtil.getMac(getContext()));
+            if(Locale.getDefault().toString().length()>0)o.put("lang", com.hyxen.adlocusaar.utils.Base64.encodeToString(RSAUtils.encryptByPublicKey(Locale.getDefault().toString().getBytes(),publicBytes), com.hyxen.adlocusaar.utils.Base64.NO_WRAP));
+            else o.put("lang", "");
+//            o.put("lang", Locale.getDefault().toString());
+
+            if(AdLocusUtil.getMac(getContext()).length()>0)o.put("mac", Base64.encodeToString(RSAUtils.encryptByPublicKey(AdLocusUtil.getMac(getContext()).getBytes(),publicBytes), Base64.NO_WRAP));
+            else o.put("mac", "");
+//            o.put("mac", AdLocusUtil.getMac(getContext()));
             o.put("noti", AdLocusUtil.isNotificationEnable(getContext()) ? 1 : 0);
-            o.put("adid", AdLocusUtil.getAdId(getContext()));
+
+            if(AdLocusUtil.getAdId(getContext()).length()>0)o.put("adid", Base64.encodeToString(RSAUtils.encryptByPublicKey(AdLocusUtil.getAdId(getContext()).getBytes(),publicBytes), Base64.NO_WRAP));
+            else o.put("adid", "");
+//            o.put("adid", AdLocusUtil.getAdId(getContext()));
             o.put("tar_enable", isLimitAdTrackingEnabled() ? 1 : 0);
 
             hashCollection = o.toString().hashCode();
 
             o.put("pkg", getAppList());
 
-            setPostParameter("plain", encrypt("e2e4193b842bb054", o.toString()));
+
+            setPostParameter("plain",  o.toString());
+//            setPostParameter("plain", encrypt("e2e4193b842bb054", o.toString()));
+
+
+//            String key=
+//                    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+//                            "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+//                            "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+//                            "6HQFQ5txU/SgC1vOrwIDAQAB\n" ;
+//            byte[] publicBytes = com.hyxen.adlocusaar.utils.Base64.decode(key, com.hyxen.adlocusaar.utils.Base64.DEFAULT);
+//            setPostParameter("plain",com.hyxen.adlocusaar.utils.Base64.encodeToString(RSAUtils.encryptByPublicKey(o.toString().getBytes(),publicBytes), com.hyxen.adlocusaar.utils.Base64.NO_WRAP).trim());
         } catch (Exception ignored) { }
         if (AdLocusUtil.SHOW_LOG) android.util.Log.d(TAG, "Collection() returned: " + getPostString());
         if (AdLocusUtil.SHOW_LOG) android.util.Log.d(TAG, "Collection() returned: " + AdLocusUtil.SHOW_LOG);

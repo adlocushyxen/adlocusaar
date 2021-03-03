@@ -3,10 +3,15 @@ package com.hyxen.adlocusaar.view.main;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.net.http.SslCertificate;
+import android.net.http.SslError;
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,6 +23,8 @@ import com.hyxen.adlocusaar.repository.data.response.GetNewAndResponse;
 import com.hyxen.adlocusaar.repository.remote.TrackImpAPI;
 import com.hyxen.adlocusaar.utils.Logger;
 import com.hyxen.adlocusaar.view.BaseActivity;
+
+import java.net.URISyntaxException;
 
 public class AdLocusActivity extends BaseActivity implements AdLocusContract.View, DialogInterface.OnDismissListener {
     public static final String TAG = AdLocusActivity.class.getSimpleName();
@@ -32,6 +39,10 @@ public class AdLocusActivity extends BaseActivity implements AdLocusContract.Vie
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ad_locas);
         mWebView = findViewById(R.id.webView);
+        mWebView.getSettings().setJavaScriptEnabled(true);
+        mWebView.getSettings().setDomStorageEnabled(true);
+
+        Repository.init(this);
         mPresenter = new AdLocusPresenter(this);
         processIntent(getIntent());
     }
@@ -43,17 +54,74 @@ public class AdLocusActivity extends BaseActivity implements AdLocusContract.Vie
 
     @Override
     public void showUrlBrowser(String url) {
+//        try {
+//            if(url.startsWith("intent") && url.indexOf("scheme=line;")>0){
+//                Intent iuri = Intent.parseUri(url, 0);
+//                startActivity(iuri);
+//                finish();
+//            }else if(url.startsWith("http")){
+//                Intent webIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+//                startActivity(webIntent);
+//                finish();
+//            }
+//        } catch (URISyntaxException e) {
+//            e.printStackTrace();
+//        }
+
         mWebView.setVisibility(View.VISIBLE);
         mWebView.loadUrl(url);
         mWebView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                try {
+                    if(request.getUrl().toString().startsWith("intent") && request.getUrl().toString().indexOf("scheme=line;")>0){
+                        Intent iuri = Intent.parseUri(request.getUrl().toString(), 0);
+                        startActivity(iuri);
+                        finish();
+                        return true;
+                    }
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
                 return super.shouldOverrideUrlLoading(view, request);
             }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                try {
+                    if(url.startsWith("intent") && url.indexOf("scheme=line;")>0){
+                        Intent iuri = Intent.parseUri(url, 0);
+                        startActivity(iuri);
+                        finish();
+                        return true;
+                    }
+                } catch (URISyntaxException e) {
+                    e.printStackTrace();
+                }
                 return super.shouldOverrideUrlLoading(view, url);
+            }
+            @Override
+            public void onReceivedSslError(WebView view, final SslErrorHandler handler, SslError error) {
+                SslCertificate sslCertificate = error.getCertificate();
+
+                final AlertDialog.Builder builder = new AlertDialog.Builder(AdLocusActivity.this);
+                builder.setTitle(R.string.ssl_error);
+                builder.setMessage (R.string.is_ssl_error_continue);
+                builder.setPositiveButton(R.string.ssl_error_ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        handler.proceed();
+                    }
+                });
+//                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        handler.cancel();
+//                    }
+//                });
+
+                final AlertDialog dialog = builder.create();
+                dialog.show();
             }
         });
     }
@@ -62,10 +130,12 @@ public class AdLocusActivity extends BaseActivity implements AdLocusContract.Vie
     public void showSettingDialog(View view) {
         if (mSettingDialogBuilder == null)
             mSettingDialogBuilder = new AlertDialog.Builder(this);
-        mSettingDialog = mSettingDialogBuilder
-                .setView(view)
-                .setOnDismissListener(this)
-                .show();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            mSettingDialog = mSettingDialogBuilder
+                    .setView(view)
+                    .setOnDismissListener(this)
+                    .show();
+        }
     }
 
     @Override
@@ -130,10 +200,11 @@ public class AdLocusActivity extends BaseActivity implements AdLocusContract.Vie
         }
 
         //Sent DCM
-        String trackImpUrl = intent.getStringExtra(Constants.TAG_INTENT_KEY_TRACK_IMP);
-        if (!TextUtils.isEmpty(trackImpUrl)) {
-            TrackImpAPI.getInstance().sendTrackImp(trackImpUrl);
-        }
+//leo3x 2018/12/22 上午 09:45 track_imp move to AdLocusNotification
+//        String trackImpUrl = intent.getStringExtra(Constants.TAG_INTENT_KEY_TRACK_IMP);
+//        if (!TextUtils.isEmpty(trackImpUrl)) {
+//            TrackImpAPI.getInstance().sendTrackImp(trackImpUrl);
+//        }
 
         //open url or big view event
         if (AdLocusContract.ACTION_CLICK.equals(action)) {

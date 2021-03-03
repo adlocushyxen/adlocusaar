@@ -228,7 +228,7 @@ public class AdActivity extends Activity //NEWPUSH
 		});
 		mWebView.setWebViewClient(new WebViewClient()
 		{
-			
+
 			@Override
 			public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
 				super.onReceivedError(view, errorCode, description, failingUrl);
@@ -240,12 +240,12 @@ public class AdActivity extends Activity //NEWPUSH
 		});
 
 		mWebView.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				//todo: replace by 
+				//todo: replace by
 				//openAdContent?
-				
+
 				finish();
 
 				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(mAdLocusAd.link));
@@ -357,7 +357,7 @@ public class AdActivity extends Activity //NEWPUSH
 		animation.setDuration(700);
 		set.addAnimation(animation);
 		rootLayout.setAnimation(set);
-		
+
 		mWebView.loadUrl(mAdLocusAd.scad_url);
 	}
 

@@ -24,9 +24,11 @@ import com.hyxen.adlocusaar.net.RequestListener;
 import com.hyxen.adlocusaar.obj.AdWebView;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -49,6 +51,7 @@ public class AdLocusAdapter
 		initWebView(layout);
 	}
 	
+	@SuppressLint("JavascriptInterface")
 	private void initWebView(final AdLocusLayout layout)
 	{
 
@@ -57,7 +60,18 @@ public class AdLocusAdapter
 			return;
 		}
 		final WebView webView = new AdWebView(activity);
-        webView.addJavascriptInterface(new MyJavaScriptInterface(layout), "HtmlViewer");  
+
+        webView.addJavascriptInterface(new MyJavaScriptInterface(layout), "HtmlViewer");
+		webView.removeJavascriptInterface("searchBoxJavaBridge_");
+		webView.removeJavascriptInterface("accessibility");
+		webView.removeJavascriptInterface("accessibilityTraversal");
+		webView.getSettings().setAllowFileAccess(false);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+			webView.getSettings().setAllowFileAccessFromFileURLs(false);
+			webView.getSettings().setAllowUniversalAccessFromFileURLs(false);
+		}
+
+
 		final AtomicBoolean isRotate = new AtomicBoolean(false);
         webView.setWebChromeClient(new WebChromeClient()
         {
@@ -108,7 +122,7 @@ public class AdLocusAdapter
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url)
 			{
-				if((url.startsWith("http://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
+				if((url.startsWith("http://") || url.startsWith("https://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
 				{
 					Activity activity = layout.activityReference.get();
 			        // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
@@ -175,7 +189,7 @@ public class AdLocusAdapter
 						{
 							//AdLocusUtil.URL_PULL_HTML_REQ
 							//"http://api.ad-locus.com/dev_html5/imp"
-							mWebView.loadDataWithBaseURL("http://api.ad-locus.com/", content, "text/html", "utf-8", url);
+							mWebView.loadDataWithBaseURL("https://api.ad-locus.com/", content, "text/html", "utf-8", url);
 						}
 					});
 				}

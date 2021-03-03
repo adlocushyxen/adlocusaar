@@ -246,7 +246,7 @@ public class InterstitialAd implements Ad
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url)
 			{
-				if((url.startsWith("http://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
+				if((url.startsWith("http://") || url.startsWith("https://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
 				{
 					Activity activity = mActivity;
 			        // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs

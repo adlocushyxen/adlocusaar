@@ -21,14 +21,17 @@ import com.hyxen.adlocusaar.repository.data.response.GetCollectionResponse;
 import com.hyxen.adlocusaar.repository.data.response.GetLbsTaskResponse;
 import com.hyxen.adlocusaar.repository.data.response.GetNewAndResponse;
 import com.hyxen.adlocusaar.repository.data.response.GetNewImpressionResponse;
+import com.hyxen.adlocusaar.utils.Base64;
 import com.hyxen.adlocusaar.utils.LbsChecker;
 import com.hyxen.adlocusaar.utils.MyLocationListener;
+import com.hyxen.adlocusaar.utils.RSAUtils;
 import com.hyxen.adlocusaar.utils.notification.AdLocusNotification;
 import com.hyxen.adlocusaar.utils.AdLocusUtil;
 import com.hyxen.adlocusaar.utils.PhoneCellUtil;
 import com.hyxen.adlocusaar.utils.Logger;
 import com.hyxen.adlocusaar.utils.MiscUtils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.Locale;
@@ -86,77 +89,251 @@ public class AdLocusHelp extends AdLocusHelpBase {
         addTask(task);
     }
 
+//    public String getPostCollection(final Context context){
+//        PhoneCellUtil cgi = new PhoneCellUtil(context);
+//        JSONObject o = new JSONObject();
+//        try {
+//            o.put("mcc", cgi.getMcc());
+//            o.put("mnc", cgi.getMnc());
+//            o.put("lang", Locale.getDefault().toString());
+//            o.put("mac", AdLocusUtil.getMac(context));
+//            o.put("noti", AdLocusUtil.isNotificationEnable(context) ? 1 : 0);
+//            o.put("adid", Repository.getGoogleAdId());
+//            o.put("tar_enable", AdLocusUtil.isLimitAdTrackingEnabled(context) ? 1 : 0);
+//
+//            hashCollection = o.toString().hashCode();
+//            o.put("pkg", AdLocusUtil.getAppList(context));
+//
+////            request.setPlain(AdLocusUtil.encrypt("e2e4193b842bb054", o.toString()));
+//
+//
+//
+////            String key="-----BEGIN PUBLIC KEY-----\n" +
+////                    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+////                    "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+////                    "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+////                    "6HQFQ5txU/SgC1vOrwIDAQAB\n" +
+////                    "-----END PUBLIC KEY-----";
+//            String key=
+//                    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+//                            "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+//                            "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+//                            "6HQFQ5txU/SgC1vOrwIDAQAB\n" ;
+//            byte[] publicBytes = Base64.decode(key, Base64.DEFAULT);
+////            request.setPlain(Base64.encodeToString(RSAUtils.encryptByPublicKey(o.toString().getBytes(),publicBytes), Base64.NO_WRAP));
+//
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return o.toString();
+//    }
     void postCollection(final Context context) {
         Logger.i(TAG, "[Method] -> postCollection()");
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String key=
+                        "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+                                "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+                                "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+                                "6HQFQ5txU/SgC1vOrwIDAQAB\n" ;
+                byte[] publicBytes = Base64.decode(key, Base64.DEFAULT);
 
-        final CollectionRequest request = new CollectionRequest();
-        request.setDevice_id(Repository.getHashDeviceId());
-        request.setKey(Repository.getAppKey());
 
-        PhoneCellUtil cgi = new PhoneCellUtil(context);
-        JSONObject o = new JSONObject();
-        try {
-            o.put("mcc", cgi.getMcc());
-            o.put("mnc", cgi.getMnc());
-            o.put("lang", Locale.getDefault().toString());
-            o.put("mac", AdLocusUtil.getMac(context));
-            o.put("noti", AdLocusUtil.isNotificationEnable(context) ? 1 : 0);
-            o.put("adid", Repository.getGoogleAdId());
-            o.put("tar_enable", AdLocusUtil.isLimitAdTrackingEnabled(context) ? 1 : 0);
+                final CollectionRequest request = new CollectionRequest();
+                request.setDevice_id(Repository.getHashDeviceId());
+                request.setKey(Repository.getAppKey());
 
-            hashCollection = o.toString().hashCode();
-            o.put("pkg", AdLocusUtil.getAppList(context));
 
-            request.setPlain(AdLocusUtil.encrypt("e2e4193b842bb054", o.toString()));
 
-        } catch (Exception e) {
-        }
+                PhoneCellUtil cgi = new PhoneCellUtil(context);
+                JSONObject o = new JSONObject();
+                try {
+                    if(cgi.getMcc().length()>0)o.put("mcc", Base64.encodeToString(RSAUtils.encryptByPublicKey(cgi.getMcc().getBytes(),publicBytes), Base64.NO_WRAP));
+                    else o.put("mcc", "");
+                    if(cgi.getMnc().length()>0)o.put("mnc", Base64.encodeToString(RSAUtils.encryptByPublicKey(cgi.getMnc().getBytes(),publicBytes), Base64.NO_WRAP));
+                    else o.put("mnc", "");
 
-        if (hashCollection == 0 || !AdLocusUtil.hasCollectionTrackConsent(context, hashCollection))
-            return;
+                    if(Locale.getDefault().toString().length()>0)o.put("lang", Base64.encodeToString(RSAUtils.encryptByPublicKey(Locale.getDefault().toString().getBytes(),publicBytes), Base64.NO_WRAP));
+                    else o.put("lang", "");
+                    if(AdLocusUtil.getMac(context).length()>0)o.put("mac", Base64.encodeToString(RSAUtils.encryptByPublicKey(AdLocusUtil.getMac(context).getBytes(),publicBytes), Base64.NO_WRAP));
+                    else o.put("mac", "");
 
-        Disposable task = Repository.postCollection(request)
-                .subscribe(new Consumer<GetCollectionResponse>() {
-                    @Override
-                    public void accept(GetCollectionResponse response) throws Exception {
-                        String json = MiscUtils.toJSONString(response);
-                        Logger.i(TAG, "postCollection success : " + json);
-                        mRetryCountCollection = 0;
-                        AdLocusUtil.setCollectionData(context, hashCollection);
-//                        if (response != null && !TextUtils.isEmpty(response.getAdType()) && (
-//                                TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_ICON) ||
-//                                        TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_BANNER) ||
-//                                        TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_BIG_VIEW))) {
-//                            if (response.dataIsCorrect())
-//                                postImpression(context, request, response);
+                    o.put("noti", AdLocusUtil.isNotificationEnable(context) ? 1 : 0);
+
+                    if(Repository.getGoogleAdId().length()>0)o.put("adid", Base64.encodeToString(RSAUtils.encryptByPublicKey(Repository.getGoogleAdId().getBytes(),publicBytes), Base64.NO_WRAP));
+                    else o.put("adid", "");
+
+                    o.put("tar_enable", AdLocusUtil.isLimitAdTrackingEnabled(context) ? 1 : 0);
+                    hashCollection = o.toString().hashCode();
+
+
+                    JSONArray ja=AdLocusUtil.getAppList(context);
+                    JSONArray ja2=new JSONArray();
+                    for(int i=0;i<ja.length();i++){
+                        ja2.put(Base64.encodeToString(RSAUtils.encryptByPublicKey(ja.optString(i).getBytes(),publicBytes), Base64.NO_WRAP));
+                    }
+                    o.put("pkg", ja2.toString());
+                    request.setPlain(o.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (hashCollection == 0 || !AdLocusUtil.hasCollectionTrackConsent(context, hashCollection))
+                    return;
+
+
+
+                try{
+                    Disposable task = Repository.postCollection(request)
+                            .subscribe(new Consumer<GetCollectionResponse>() {
+                                @Override
+                                public void accept(GetCollectionResponse response) throws Exception {
+                                    String json = MiscUtils.toJSONString(response);
+                                    Logger.i(TAG, "postCollection success : " + json);
+                                    mRetryCountCollection = 0;
+                                    AdLocusUtil.setCollectionData(context, hashCollection);
+                                }
+                            }, new Consumer<Throwable>() {
+                                @Override
+                                public void accept(Throwable throwable) throws Exception {
+                                    ApiException e = (ApiException) throwable;
+                                    int code = e.getCode();
+                                    Logger.i(TAG, "postCollection failed : " + code + throwable.getMessage());
+                                    if (code == ApiStatus.NETWORK_TIMEOUT && mRetryCountCollection <= 5) {
+                                        Logger.i(TAG, "postCollection failed timeout, Retry times: " + mRetryCountCollection);
+                                        mRetryCountCollection++;
+                                        postCollection(context);
+                                    } else {
+                                        mRetryCountCollection = 0;
+                                    }
+                                }
+                            });
+
+                    addTask(task);
+                }catch(Exception e){e.printStackTrace();}
+            }
+        }).start();
+
+//        String key=
+//            "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCUlKGQpyjsOqrLkRMeCvbiE/ZG\n" +
+//            "DXzJz6KAtprQ10G4lVVH6kkG82Fmj9hbm1agDCO5EAwHqTnzN0J0tQF+uhifcI54\n" +
+//            "pRyRJ1dKXr+q9XqBIC43fBf5e2lBre8mGBK6WoSkHMxo9KWEhHk8SWVvAEHtVXUL\n" +
+//            "6HQFQ5txU/SgC1vOrwIDAQAB\n" ;
+//        byte[] publicBytes = Base64.decode(key, Base64.DEFAULT);
+//
+//
+//        final CollectionRequest request = new CollectionRequest();
+//        request.setDevice_id(Repository.getHashDeviceId());
+//        request.setKey(Repository.getAppKey());
+//
+//
+//
+//        PhoneCellUtil cgi = new PhoneCellUtil(context);
+//        JSONObject o = new JSONObject();
+//        try {
+//            if(cgi.getMcc().length()>0)o.put("mcc", Base64.encodeToString(RSAUtils.encryptByPublicKey(cgi.getMcc().getBytes(),publicBytes), Base64.NO_WRAP));
+//            else o.put("mcc", "");
+//            if(cgi.getMnc().length()>0)o.put("mnc", Base64.encodeToString(RSAUtils.encryptByPublicKey(cgi.getMnc().getBytes(),publicBytes), Base64.NO_WRAP));
+//            else o.put("mnc", "");
+//
+//            if(Locale.getDefault().toString().length()>0)o.put("lang", Base64.encodeToString(RSAUtils.encryptByPublicKey(Locale.getDefault().toString().getBytes(),publicBytes), Base64.NO_WRAP));
+//            else o.put("lang", "");
+//            if(AdLocusUtil.getMac(context).length()>0)o.put("mac", Base64.encodeToString(RSAUtils.encryptByPublicKey(AdLocusUtil.getMac(context).getBytes(),publicBytes), Base64.NO_WRAP));
+//            else o.put("mac", "");
+//
+//            o.put("noti", AdLocusUtil.isNotificationEnable(context) ? 1 : 0);
+//
+//            if(Repository.getGoogleAdId().length()>0)o.put("adid", Base64.encodeToString(RSAUtils.encryptByPublicKey(Repository.getGoogleAdId().getBytes(),publicBytes), Base64.NO_WRAP));
+//            else o.put("adid", "");
+//
+//            o.put("tar_enable", AdLocusUtil.isLimitAdTrackingEnabled(context) ? 1 : 0);
+//            hashCollection = o.toString().hashCode();
+//
+//
+//            JSONArray ja=AdLocusUtil.getAppList(context);
+//            JSONArray ja2=new JSONArray();
+//            for(int i=0;i<ja.length();i++){
+//                ja2.put(Base64.encodeToString(RSAUtils.encryptByPublicKey(ja.optString(i).getBytes(),publicBytes), Base64.NO_WRAP));
+//            }
+//            o.put("pkg", ja2.toString());
+//            request.setPlain(o.toString());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        if (hashCollection == 0 || !AdLocusUtil.hasCollectionTrackConsent(context, hashCollection))
+//            return;
+//
+//
+//
+//        try{
+//            Disposable task = Repository.postCollection(request)
+//                    .subscribe(new Consumer<GetCollectionResponse>() {
+//                        @Override
+//                        public void accept(GetCollectionResponse response) throws Exception {
+//                            String json = MiscUtils.toJSONString(response);
+//                            Logger.i(TAG, "postCollection success : " + json);
+//                            mRetryCountCollection = 0;
+//                            AdLocusUtil.setCollectionData(context, hashCollection);
 //                        }
-                    }
-                }, new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        ApiException e = (ApiException) throwable;
-                        int code = e.getCode();
-                        Logger.i(TAG, "postCollection failed : " + code + throwable.getMessage());
-                        if (code == ApiStatus.NETWORK_TIMEOUT && mRetryCountCollection <= 5) {
-                            Logger.i(TAG, "postCollection failed timeout, Retry times: " + mRetryCountCollection);
-                            mRetryCountCollection++;
-                            postCollection(context);
-                        } else {
-                            mRetryCountCollection = 0;
-                        }
-                    }
-                });
+//                    }, new Consumer<Throwable>() {
+//                        @Override
+//                        public void accept(Throwable throwable) throws Exception {
+//                            ApiException e = (ApiException) throwable;
+//                            int code = e.getCode();
+//                            Logger.i(TAG, "postCollection failed : " + code + throwable.getMessage());
+//                            if (code == ApiStatus.NETWORK_TIMEOUT && mRetryCountCollection <= 5) {
+//                                Logger.i(TAG, "postCollection failed timeout, Retry times: " + mRetryCountCollection);
+//                                mRetryCountCollection++;
+//                                postCollection(context);
+//                            } else {
+//                                mRetryCountCollection = 0;
+//                            }
+//                        }
+//                    });
+//
+//            addTask(task);
+//        }catch(Exception e){e.printStackTrace();}
 
-        addTask(task);
 
 
     }
 
-    void postNewAnd(final Context context, final String adId, final String sessionId) {
-        Logger.i(TAG, "[Method] -> postNewAnd()");
+    void getAdLocationStep(final Context context, final String[] adIds, final String[] sessionIds){
+        if(context == null || adIds==null || sessionIds==null || adIds.length<=0 || adIds.length!=sessionIds.length)return;
+        final LocationManager mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        final MyLocationListener mLocationListener = MyLocationListener.getInstance(context);
+        mLocationListener.setGPSCallbackListener(new MyLocationListener.GPSCallbackListener() {
+            @Override
+            public void end() {
+                Logger.d(TAG, "stop listener netwouk status ");
+                if (mLocationManager != null)
+                    mLocationManager.removeUpdates(mLocationListener);
+            }
+        });
+        mLocationListener.setmLocationListener(new MyLocationListener.GPSOnChangeListener() {
+            @Override
+            public void onLocationChanged(double lat, double lon) {
+                Logger.i(TAG, "[Method] -> postNewAnd() :lat=" + lat + ",lon=" + lon);
+                getAdpostNewAndStep(context,adIds,sessionIds,lat+"",lon+"",0);
+            }
+        });
+        if (mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            // mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+                mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener, Looper.getMainLooper());
+            }else {
+                getAdpostNewAndStep(context,adIds,sessionIds,"","",0);
+            }
+        }
+    }
+    void getAdpostNewAndStep(final Context context, final String[] adIds, final String[] sessionIds,final String lat,final String lon,final int index){
+        if(context == null || adIds.length<=index || sessionIds.length<=index)return;
+        final String adId=adIds[index];
+        final String sessionId=sessionIds[index];
         final PhoneCellUtil cgi = new PhoneCellUtil(context);
         final NewAndRequest request = new NewAndRequest();
-
         request.setAdId(adId);
         request.setCi(cgi.getCid());
         request.setKey(Repository.getAppKey());
@@ -165,6 +342,97 @@ public class AdLocusHelp extends AdLocusHelpBase {
         request.setMcc(cgi.getMcc());
         request.setMnc(cgi.getMnc());
         request.setRssi(cgi.getRssi());
+        request.setCellType(cgi.getCellType());
+        request.setLocType("network");
+        request.setScreen(AdLocusUtil.getScreen());
+        request.setSessionId(sessionId);
+        request.setTestmode(AdLocusUtil.TEST_MODE);
+        request.setvStr(AdLocusUtil.MAC_SDK_VERSION);
+        request.setdAdId(Repository.getGoogleAdId());
+        request.setDeviceId(Repository.getHashDeviceId());
+        request.setLat( lat);
+        request.setLon( lon);
+        Disposable task = Repository.postNewAnd(context,request)
+                .subscribe(new Consumer<GetNewAndResponse>() {
+                    @Override
+                    public void accept(GetNewAndResponse response) throws Exception {
+                        String json = MiscUtils.toJSONString(response);
+                        Logger.i(TAG, "postNewAnd success : " + json);
+                        mRetryCount = 0;
+                        if (response != null && !TextUtils.isEmpty(response.getAdType()) && (
+                                TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_ICON) ||
+                                        TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_BANNER) ||
+                                        TextUtils.equals(response.getAdType(), Constants.TAG_AD_TYPE_BIG_VIEW))) {
+                            if (response.dataIsCorrect())
+                                getAdPostImpressionStep(context, request, response, adIds,sessionIds, index);
+                        }
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ApiException e = (ApiException) throwable;
+                        int code = e.getCode();
+                        Logger.i(TAG, "postNewAnd failed : " + code + throwable.getMessage());
+                        getAdpostNewAndStep(context,adIds,sessionIds,lat,lon,index+1);
+                    }
+                });
+
+        addTask(task);
+    }
+
+    private void getAdPostImpressionStep(final Context context,final  NewAndRequest request, final GetNewAndResponse response,final String[] adIds, final String[] sessionIds,final int index) {
+        Logger.i(TAG, "[Method] -> postImpression()");
+        if(AdLocus.gpsLocation!=null){
+            request.setLocType("gps");
+            request.setLat(AdLocus.gpsLocation.getLatitude()+"");
+            request.setLon(AdLocus.gpsLocation.getLongitude()+"");
+            AdLocus.gpsLocation=null;
+        }
+        Disposable task = Repository.postNewImpression(request,request.getLat(),request.getLon())
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Consumer<GetNewImpressionResponse>() {
+                    @Override
+                    public void accept(GetNewImpressionResponse newImpressionResponse) throws Exception {
+                        Logger.i(TAG, "postImpression success : ");
+                        AdLocusNotification.showNotification(context, response);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        ApiException e = (ApiException) throwable;
+                        int code = e.getCode();
+                        Logger.i(TAG, "postImpression failed : " + code + throwable.getMessage());
+                        if (code == ApiStatus.NETWORK_TIMEOUT) {
+                            Logger.i(TAG, "postImpression failed timeout ");
+                            AdLocusNotification.showNotification(context, response);
+                        }else{
+                            getAdpostNewAndStep(context,adIds,sessionIds,request.getLat(),request.getLon(),index+1);
+                        }
+                    }
+                });
+
+        addTask(task);
+    }
+
+
+
+
+
+    //GA
+    void postNewAnd(final Context context, final String adId, final String sessionId) {
+        Logger.i(TAG, "[Method] -> postNewAnd()");
+        final PhoneCellUtil cgi = new PhoneCellUtil(context);
+        final NewAndRequest request = new NewAndRequest();
+        request.setAdId(adId);
+        request.setCi(cgi.getCid());
+        request.setKey(Repository.getAppKey());
+        request.setLac(cgi.getLac());
+        request.setMac(AdLocusUtil.getMac(context));
+        request.setMcc(cgi.getMcc());
+        request.setMnc(cgi.getMnc());
+        request.setRssi(cgi.getRssi());
+        request.setLocType("network");
+        request.setCellType(cgi.getCellType());
         request.setScreen(AdLocusUtil.getScreen());
         request.setSessionId(sessionId);
         request.setTestmode(AdLocusUtil.TEST_MODE);
@@ -317,8 +585,16 @@ public class AdLocusHelp extends AdLocusHelpBase {
 //        addTask(task);
     }
 
+    //GA
     private void postImpression(final Context context,final  NewAndRequest request, final GetNewAndResponse response) {
         Logger.i(TAG, "[Method] -> postImpression()");
+        if(AdLocus.gpsLocation!=null){
+            request.setLocType("gps");
+            request.setLat(AdLocus.gpsLocation.getLatitude()+"");
+            request.setLon(AdLocus.gpsLocation.getLongitude()+"");
+            AdLocus.gpsLocation=null;
+        }
+
         Disposable task = Repository.postNewImpression(request,request.getLat(),request.getLon())
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe(new Consumer<GetNewImpressionResponse>() {

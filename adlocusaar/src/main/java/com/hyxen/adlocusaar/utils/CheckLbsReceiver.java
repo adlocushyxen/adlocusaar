@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
+import com.hyxen.adlocusaar.AdLocus;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.repository.data.response.GetLbsTaskResponse;
@@ -38,6 +39,7 @@ public class CheckLbsReceiver extends BroadcastReceiver {
         if (bundle.get(Constants.TAG_BROADCAST_LBS_CHECKER_KEY).equals(Constants.TAG_BROADCAST_LBS_CHECKER_VALUE)) {
             Logger.d(TAG, "onReceive : AG_BROADCAST_LBS_CHECKER_VALUE");
             LbsChecker.getInstance(context).restartAlarmTimer();
+//            AdLocus.startGpsLocation();
 
             if(mLocationManager!=null && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)){
                 Disposable disposable = Repository.checkLbsDataIsEmpty(context)

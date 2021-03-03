@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import com.hyxen.adlocusaar.AdLocus;
 import com.hyxen.adlocusaar.constants.ApiStatus;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.ApiException;
@@ -335,6 +336,7 @@ public class MyLocationListener implements LocationListener {
      * @param sessionId
      * @return
      */
+    //LBS
     private Single<GetNewAndResponse> postNewAnd(final Context context, final String adId, final String sessionId,final double lat, final double lon) {
         Logger.i(TAG, "[Method] postNewAnd");
 
@@ -347,13 +349,15 @@ public class MyLocationListener implements LocationListener {
         mRequest.setMac(AdLocusUtil.getMac(context));
         mRequest.setMcc(cgi.getMcc());
         mRequest.setMnc(cgi.getMnc());
+        mRequest.setRssi(cgi.getRssi());
+        mRequest.setCellType(cgi.getCellType());
+        mRequest.setLocType("network");
         mRequest.setScreen(AdLocusUtil.getScreen());
         mRequest.setSessionId(sessionId);
         mRequest.setTestmode(AdLocusUtil.TEST_MODE);
         mRequest.setvStr(AdLocusUtil.MAC_SDK_VERSION);
         mRequest.setdAdId(Repository.getGoogleAdId());
         mRequest.setDeviceId(Repository.getHashDeviceId());
-        mRequest.setRssi(cgi.getRssi());
         mRequest.setLat(lat + "");
         mRequest.setLon(lon + "");
 
@@ -367,9 +371,16 @@ public class MyLocationListener implements LocationListener {
      * @param lat
      * @param lon
      */
+    //LBS
     private Single<GetNewImpressionResponse> postImpression(double lat, double lon) {
         Logger.i(TAG, "[Method] -> postImpression()");
         mCurrentAPI = TAG_API_IMPRESSION;
+        if(AdLocus.gpsLocation!=null){
+            mRequest.setLocType("gps");
+            lat=AdLocus.gpsLocation.getLatitude();
+            lon=AdLocus.gpsLocation.getLongitude();
+            AdLocus.gpsLocation=null;
+        }
         return Repository.postNewImpression(mRequest, lat+"", lon+"");
     }
 }

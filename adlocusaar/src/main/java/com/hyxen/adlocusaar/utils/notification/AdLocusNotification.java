@@ -7,14 +7,21 @@ import android.text.TextUtils;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.data.response.GetLbsTaskResponse;
 import com.hyxen.adlocusaar.repository.data.response.GetNewAndResponse;
+import com.hyxen.adlocusaar.repository.remote.net.HxRequest;
 import com.hyxen.adlocusaar.utils.Logger;
 
+import java.io.IOException;
 import java.util.HashMap;
 
 import io.reactivex.Single;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 public class AdLocusNotification extends NotificationHelp {
     private static final String TAG = AdLocusNotification.class.getSimpleName();
@@ -34,6 +41,33 @@ public class AdLocusNotification extends NotificationHelp {
                 showNotificationBigView(context, adInfo);
                 break;
         }
+        if(!TextUtils.isEmpty(adInfo.getTrackImp())){
+            getTrackImp(adInfo.getTrackImp());
+        }
+    }
+    private static int trackImpCnt=0;
+    public static void getTrackImp(final String url){
+        try{
+            if(!TextUtils.isEmpty(url)){
+                Logger.i(TAG, "TrackImp : " + url);
+                OkHttpClient client = new OkHttpClient();
+                Request.Builder b=new Request.Builder();
+                Request request = b.url(url).build();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Call call, IOException e) {
+                        if(trackImpCnt++<3)getTrackImp(url);
+                        else trackImpCnt=0;
+                    }
+
+                    @Override
+                    public void onResponse(Call call, Response response) throws IOException {
+                        Logger.i(TAG, "TrackImp response: " + new String(response.body().bytes(),"utf-8"));
+                        trackImpCnt=0;
+                    }
+                });
+            }
+        }catch(Exception e){e.printStackTrace();}
     }
 
     private static void showNotificationORIGIN(final Context context, final GetNewAndResponse adData) {

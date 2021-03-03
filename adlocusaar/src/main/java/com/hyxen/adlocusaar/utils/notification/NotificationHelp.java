@@ -133,7 +133,7 @@ public class NotificationHelp {
         if (appIconResId == 0) {
             appIconResId = MiscUtils.getAppIcon(context);
         }
-
+//        int appIconResId = MiscUtils.getAppIcon(context);
         return appIconResId;
     }
 
