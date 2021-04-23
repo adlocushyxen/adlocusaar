@@ -1,7 +1,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 26
+//    compileSdkVersion 26
+    compileSdkVersion 29
 
 
 
@@ -9,8 +10,8 @@ android {
         //minSdkVersion 19
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 128
-        versionName "4.1.09"
+        versionCode 130
+        versionName "4.1.11"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -43,9 +44,13 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
 
+    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
+
 
     // Google
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
 }
 apply from: "bintrayUpload.gradle"
+//上傳指令
+//gradlew.bat bintrayUpload

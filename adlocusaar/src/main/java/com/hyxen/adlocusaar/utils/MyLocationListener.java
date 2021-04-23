@@ -130,6 +130,28 @@ public class MyLocationListener implements LocationListener {
             mLocationListener=null;
         }
     }
+    public void onLocationChanged(double lat,double lon) {
+        Logger.i(TAG, "[Method] -> onLocationChanged,"+mAPIRunning+","+(mLocationListener!=null));
+//        if (mTaskItems == null) {
+//            Logger.e(TAG, "mTaskItem is null");
+//            return;
+//        }
+
+        if (!mAPIRunning) {
+            mAPIRunning = true;
+            if(mLocationListener!=null)mLocationListener.onLocationChanged(lat,lon);
+            else {
+                if (mTaskItems == null) {
+                    Logger.e(TAG, "mTaskItem is null");
+                    return;
+                }
+                checkShowNotification(lat, lon);
+            }
+        } else {
+            release();
+            mLocationListener=null;
+        }
+    }
 
     @Override
     public void onStatusChanged(String provider, int status, Bundle extras) {

@@ -3,6 +3,7 @@ package com.hyxen.adlocusaar;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.location.Location;
 import android.location.LocationManager;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +15,8 @@ import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.ApiException;
 import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.repository.data.RemoteResponse;
+import com.hyxen.adlocusaar.repository.data.domain.LbsTask;
+import com.hyxen.adlocusaar.repository.data.domain.LbsTaskLlr;
 import com.hyxen.adlocusaar.repository.data.request.CollectionRequest;
 import com.hyxen.adlocusaar.repository.data.request.GetLbsFileRequest;
 import com.hyxen.adlocusaar.repository.data.request.NewAndRequest;
@@ -321,7 +324,9 @@ public class AdLocusHelp extends AdLocusHelpBase {
         });
         if (mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
             // mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener, Looper.getMainLooper());
             }else {
                 getAdpostNewAndStep(context,adIds,sessionIds,"","",0);
@@ -446,7 +451,7 @@ public class AdLocusHelp extends AdLocusHelpBase {
         mLocationListener.setGPSCallbackListener(new MyLocationListener.GPSCallbackListener() {
             @Override
             public void end() {
-                Logger.d(TAG, "stop listener netwouk status ");
+                Logger.d(TAG, "stop listener network status ");
                 if (mLocationManager != null)
                     mLocationManager.removeUpdates(mLocationListener);
             }
@@ -492,8 +497,12 @@ public class AdLocusHelp extends AdLocusHelpBase {
                 addTask(task);
             }
         });
+
+
         if (mLocationManager != null && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {//                                            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, mLocationListener);
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    && mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                 mLocationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, mLocationListener, Looper.getMainLooper());
             }else{
                 request.setLat( "");
@@ -709,6 +718,8 @@ public class AdLocusHelp extends AdLocusHelpBase {
                         //將取到的LBS Task Json 存入暫存
                         String responseJson = MiscUtils.toJSONString(getLbsTaskResponse);
                         Repository.setLbsTaskJson(responseJson);
+                        //JSONObject dataJ=new JSONObject(responseJson);
+
 
                         //設置排程
                         LbsChecker.getInstance(context).startAlarmTimer();
@@ -722,13 +733,40 @@ public class AdLocusHelp extends AdLocusHelpBase {
                                     public void accept(GetLbsTaskResponse getLbsTaskResponse) throws Exception {
                                         Logger.i(TAG, "Disposable accept");
                                         if ( ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                                            Logger.i(TAG, "GSP permission is not granted");
+                                            Logger.i(TAG, "GPS permission is not granted");
+                                            if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
+                                                try{
+                                                    LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
+                                                    MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
+                                                }catch(Exception e){e.printStackTrace();}
+                                            }
+
                                             return;
                                         }
+//
+                                        if ( ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                                            Logger.i(TAG, "GPS permission is not granted");
+                                            if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
+                                                try{
+                                                    LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
+                                                    MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
+                                                }catch(Exception e){e.printStackTrace();}
+                                            }
+                                            return;
+                                        }
+
+
+
 
                                         final LocationManager mLocationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
                                         if ( !mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
                                             Logger.i(TAG, "GSP network is not open");
+                                            if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
+                                                try{
+                                                    LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
+                                                    MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
+                                                }catch(Exception e){e.printStackTrace();}
+                                            }
                                             return;
                                         }
                                         final MyLocationListener mLocationListener = MyLocationListener.getInstance(getLbsTaskResponse, context);

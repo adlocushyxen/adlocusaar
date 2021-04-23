@@ -153,36 +153,38 @@ public class AdActivity extends Activity //NEWPUSH
 	}
 
 	private void checkPermission(){
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        finish();
+//		if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//
+//			// Should we show an explanation?
+//			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+//				AlertDialog.Builder b = new AlertDialog.Builder(this);
+//				b.setTitle("取用位置")
+//						.setMessage("提供合適的優惠通知。")
+//						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								ActivityCompat.requestPermissions(AdActivity.this,
+//										new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+//										PERMISSIONS_REQUEST_CODE);
+//							}
+//						})
+//						.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								finish();
+//							}
+//						})
+//						.show();
+//			} else {
+//				ActivityCompat.requestPermissions(this,
+//						new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+//						PERMISSIONS_REQUEST_CODE);
+//			}
+//		} else {
+//			finish();
+//		}
 
-			// Should we show an explanation?
-			if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_COARSE_LOCATION)) {
-				AlertDialog.Builder b = new AlertDialog.Builder(this);
-				b.setTitle("取用位置")
-						.setMessage("提供合適的優惠通知。")
-						.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								ActivityCompat.requestPermissions(AdActivity.this,
-										new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-										PERMISSIONS_REQUEST_CODE);
-							}
-						})
-						.setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								finish();
-							}
-						})
-						.show();
-			} else {
-				ActivityCompat.requestPermissions(this,
-						new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-						PERMISSIONS_REQUEST_CODE);
-			}
-		} else {
-			finish();
-		}
 	}
 
 	private void initLayout()

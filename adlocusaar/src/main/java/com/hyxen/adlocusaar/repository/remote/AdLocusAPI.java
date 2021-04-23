@@ -51,6 +51,7 @@ public class AdLocusAPI extends RemoteAPI {
         String url = AdLocus.isDebug() ?
                 "https://test.adlocus_api.dev.hxcld.com/" :
                 "https://a.api.ad-locus.com/";
+//        String url = "https://a.api.ad-locus.com/";
         OkHttpClient client = getOkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()

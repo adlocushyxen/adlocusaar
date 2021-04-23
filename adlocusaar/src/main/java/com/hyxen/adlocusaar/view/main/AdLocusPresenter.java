@@ -32,6 +32,7 @@ public class AdLocusPresenter extends BasePresenter implements AdLocusContract.P
     private static final String TAG_SETTING_URL = BuildConfig.DEBUG ?
             "http://test.adlocus_api.dev.hxcld.com/pref/set/?device_id=%1$s&app_key=%2$s" :
             "http://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
+//private static final String TAG_SETTING_URL = "http://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
     private AdLocusContract.View mView;
     private WebView mWebView;
 

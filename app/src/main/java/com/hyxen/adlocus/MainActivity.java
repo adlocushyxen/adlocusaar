@@ -3,6 +3,7 @@ package com.hyxen.adlocus;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,7 +13,6 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.hyxen.adlocusaar.AdLocus;
 import com.hyxen.adlocusaar.AdLocusHelp;
 import com.hyxen.adlocusaar.constants.Constants;
-import com.hyxen.adlocusaar.push.Collection;
 import com.hyxen.adlocusaar.repository.remote.RemoteAPI;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 import com.hyxen.adlocusaar.util.Log;
@@ -26,7 +26,11 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.Call;
@@ -45,14 +49,14 @@ public class MainActivity extends AppCompatActivity  {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this, AdLocusActivity.class);
-        intent.setAction(AdLocusContract.ACTION_CLICK);
-        intent.putExtra(Constants.TAG_INTENT_URL, "https://card.apply.hsbc.com.tw/hsbcoa/oaadd?cardid=1&BannerID=ALS08");
-        intent.putExtra(Constants.TAG_INTENT_ID, -1);
-        intent.putExtra(Constants.TAG_INTENT_KEY_TRACK_IMP, "");
-
-//        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
+//        Intent intent = new Intent(this, AdLocusActivity.class);
+//        intent.setAction(AdLocusContract.ACTION_CLICK);
+//        intent.putExtra(Constants.TAG_INTENT_URL, "https://card.apply.hsbc.com.tw/hsbcoa/oaadd?cardid=1&BannerID=ALS08");
+//        intent.putExtra(Constants.TAG_INTENT_ID, -1);
+//        intent.putExtra(Constants.TAG_INTENT_KEY_TRACK_IMP, "");
+//
+////        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
+//        startActivity(intent);
 
 //        new Collection(this).run();
 
@@ -122,15 +126,21 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-//            String token = FirebaseInstanceId.getInstance().getToken();
-//            AdLocus.getInstance(this)
-//                    .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
-//                            getString(R.string.fcm_app_key), getPackageName(), getString(R.string.app_key));
-//        } else {
-//            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, TAG_LOCATION);
-//        }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            String token = FirebaseInstanceId.getInstance().getToken();
+            AdLocus.getInstance(this)
+                    .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
+                            getString(R.string.fcm_app_key), getPackageName(), getString(R.string.app_key));
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, TAG_LOCATION);
+        }
+
+
+        Logger.e("TAG", "[fcmMessage]:"+Constants.TAG_FCM_LC);
+        Map<String, String> fcmMessage=new TreeMap<>();
+        fcmMessage.put("type",Constants.TAG_FCM_LC);
+        AdLocus.getInstance().sendFCMMessage(this,fcmMessage);
     }
 
     @Override

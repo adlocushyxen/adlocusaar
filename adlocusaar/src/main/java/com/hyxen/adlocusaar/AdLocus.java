@@ -147,6 +147,7 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
         Constants.TAG_FCM_TEST:判斷此FCM是測試，走測試模式
          */
         if (TextUtils.equals(response.getType(), Constants.TAG_FCM_LC)) {
+            Logger.e(TAG, "[sendFCMMessage] TAG_FCM_LC:"+Constants.TAG_FCM_LC);
             getLbsFile(context);
         } else if (TextUtils.equals(response.getType(), Constants.TAG_FCM_GA)) {
 //        Repository.setFCMMessage(fcmMessage);

@@ -210,21 +210,22 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 
 	static long sLastCheckTs = 0;
 	public static boolean checkSelfPermission(final Context context){
-		boolean ret = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-		setPause(context, !ret);
-		if (!ret && System.currentTimeMillis() - sLastCheckTs > 1000) {
-			sLastCheckTs = System.currentTimeMillis();
-			new Handler(context.getMainLooper()).postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					Intent intent = new Intent(context, AdActivity.class);
-					intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-					intent.setAction(AdActivity.ACTION_REQUEST_PERMISSION);
-					context.startActivity(intent);
-				}
-			}, 100);
-		}
-		return  ret;
+        return false;
+//		boolean ret = ContextCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+//		setPause(context, !ret);
+//		if (!ret && System.currentTimeMillis() - sLastCheckTs > 1000) {
+//			sLastCheckTs = System.currentTimeMillis();
+//			new Handler(context.getMainLooper()).postDelayed(new Runnable() {
+//				@Override
+//				public void run() {
+//					Intent intent = new Intent(context, AdActivity.class);
+//					intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
+//					intent.setAction(AdActivity.ACTION_REQUEST_PERMISSION);
+//					context.startActivity(intent);
+//				}
+//			}, 100);
+//		}
+//		return  ret;
 	}
 
 	/**
