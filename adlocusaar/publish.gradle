@@ -55,7 +55,7 @@ publishing {
         bar(MavenPublication){
             groupId "io.github.adlocushyxen"
             artifactId "adlocusaar"
-            version "4.1.62"
+            version "4.1.63"
             artifact("$buildDir/outputs/aar/adlocusaar-release.aar")
         }
     }
