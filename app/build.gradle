@@ -1,11 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    namespace "com.hyxen.adlocus"
+    compileSdkVersion 35
     defaultConfig {
         applicationId "com.hyxen.adlocus"
-        minSdkVersion 19
-        targetSdkVersion 26
+        minSdkVersion 26
+        targetSdkVersion 35
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -29,10 +30,26 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-    implementation project(':adlocusaar')
-    api 'com.google.firebase:firebase-messaging:15.0.0'
 
-    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
+    implementation "androidx.security:security-crypto:1.1.0-alpha02"
+//    implementation project(':adlocusaar')
+    implementation 'io.reactivex.rxjava2:rxjava:2.0.6'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
+
+    implementation("io.github.adlocushyxen:adlocusaar:4.1.52", {
+        exclude group: 'com.google.android.gms', module: 'play-services-ads'
+        exclude group: 'com.google.android.gms', module: 'play-services-base'
+    })
+    /*
+    implementation("io.github.vfhhu:adlocusaar:4.1.50", {
+        exclude group: 'com.google.android.gms', module: 'play-services-ads'
+        exclude group: 'com.google.android.gms', module: 'play-services-base'
+    })*/
+
+//    api 'com.google.firebase:firebase-messaging:15.0.0'
+
+//    implementation 'com.squareup.okhttp3:okhttp:4.2.0'
 
 }
-apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.gms.google-services'

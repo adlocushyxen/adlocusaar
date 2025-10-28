@@ -2,66 +2,67 @@ package com.hyxen.adlocus;
 
 import android.text.TextUtils;
 
-import com.google.firebase.messaging.FirebaseMessagingService;
-import com.google.firebase.messaging.RemoteMessage;
-import com.hyxen.adlocusaar.AdLocus;
-import com.hyxen.adlocusaar.constants.Constants;
-import com.hyxen.adlocusaar.repository.data.response.GetFCMDataResponse;
-import com.hyxen.adlocusaar.utils.Logger;
+//import com.google.firebase.messaging.FirebaseMessagingService;
+//import com.google.firebase.messaging.RemoteMessage;
+//import com.hyxen.adlocusaar.AdLocus;
+//import com.hyxen.adlocusaar.constants.Constants;
+//import com.hyxen.adlocusaar.repository.data.response.GetFCMDataResponse;
+//import com.hyxen.adlocusaar.utils.Logger;
 
 import java.util.Map;
 
-public class MyFirebaseMessagingService extends FirebaseMessagingService {
+public class MyFirebaseMessagingService  {
+//    extends FirebaseMessagingService
 
-    private static final String TAG = "MyFirebaseMsgService";
-
-    /**
-     * Called when message is received.
-     *
-     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
-     */
-    // [START receive_message]
-    @Override
-    public void onMessageReceived(RemoteMessage remoteMessage) {
-        // [START_EXCLUDE]
-        // There are two types of messages data messages and notification messages. Data messages are handled
-        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
-        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
-        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
-        // When the user taps on the notification they are returned to the app. Messages containing both notification
-        // and data payloads are treated as notification messages. The Firebase console always sends notification
-        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
-        // [END_EXCLUDE]
-
-        // TODO(developer): Handle FCM messages here.
-        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Logger.d(TAG, "From: " + remoteMessage.getFrom());
-
-        // Check if message contains a data payload.
-        if (remoteMessage.getData().size() > 0) {
-            Map<String, String> data = remoteMessage.getData();
-            Logger.d(TAG, "Message data payload: " + remoteMessage.getData());
-            if (TextUtils.equals(data.get(GetFCMDataResponse.TAG_TARGET), Constants.TAG_FCM_TARGET))
-                AdLocus.getInstance().sendFCMMessage(this,data);
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
-//                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-//                handleNow();
-            }
-
-        }
-
-        // Check if message contains a notification payload.
-//        if (remoteMessage.getNotification() != null) {
-//            Logger.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-//            AdLocus.getInstance().sendFCMMessage(remoteMessage.getNotification().getBody());
+//    private static final String TAG = "MyFirebaseMsgService";
+//
+//    /**
+//     * Called when message is received.
+//     *
+//     * @param remoteMessage Object representing the message received from Firebase Cloud Messaging.
+//     */
+//    // [START receive_message]
+//    @Override
+//    public void onMessageReceived(RemoteMessage remoteMessage) {
+//        // [START_EXCLUDE]
+//        // There are two types of messages data messages and notification messages. Data messages are handled
+//        // here in onMessageReceived whether the app is in the foreground or background. Data messages are the type
+//        // traditionally used with GCM. Notification messages are only received here in onMessageReceived when the app
+//        // is in the foreground. When the app is in the background an automatically generated notification is displayed.
+//        // When the user taps on the notification they are returned to the app. Messages containing both notification
+//        // and data payloads are treated as notification messages. The Firebase console always sends notification
+//        // messages. For more see: https://firebase.google.com/docs/cloud-messaging/concept-options
+//        // [END_EXCLUDE]
+//
+//        // TODO(developer): Handle FCM messages here.
+//        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+//        Logger.d(TAG, "From: " + remoteMessage.getFrom());
+//
+//        // Check if message contains a data payload.
+//        if (remoteMessage.getData().size() > 0) {
+//            Map<String, String> data = remoteMessage.getData();
+//            Logger.d(TAG, "Message data payload: " + remoteMessage.getData());
+//            if (TextUtils.equals(data.get(GetFCMDataResponse.TAG_TARGET), Constants.TAG_FCM_TARGET))
+//                AdLocus.getInstance().sendFCMMessage(this,data);
+//            if (/* Check if data needs to be processed by long running job */ true) {
+//                // For long-running tasks (10 seconds or more) use Firebase Job Dispatcher.
+////                scheduleJob();
+//            } else {
+//                // Handle message within 10 seconds
+////                handleNow();
+//            }
+//
 //        }
-
-        // Also if you intend on generating your own notifications as a result of a received FCM
-        // message, here is where that should be initiated. See sendNotification method below.
-
-
-    }
+//
+//        // Check if message contains a notification payload.
+////        if (remoteMessage.getNotification() != null) {
+////            Logger.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+////            AdLocus.getInstance().sendFCMMessage(remoteMessage.getNotification().getBody());
+////        }
+//
+//        // Also if you intend on generating your own notifications as a result of a received FCM
+//        // message, here is where that should be initiated. See sendNotification method below.
+//
+//
+//    }
 }

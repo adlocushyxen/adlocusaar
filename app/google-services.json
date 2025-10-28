@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "293045263734",
+    "firebase_url": "https://testadlocus.firebaseio.com",
+    "project_id": "testadlocas",
+    "storage_bucket": "testadlocas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:293045263734:android:46b0b48c0c0026f3",
+        "android_client_info": {
+          "package_name": "com.hyxen.adlocus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "293045263734-b4lqhud6dd2vjacul6fo2gorauj54ndo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hyxen.adlocus",
+            "certificate_hash": "63c18e1ea85d07998d5b5cf15b1d285ea26b5931"
+          }
+        },
+        {
+          "client_id": "293045263734-1r286dl10bfajedp493nj8ufq6pelevq.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD79Hmm9FMaFXhHJh79XEECXB_gTe2oGDA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "293045263734-1r286dl10bfajedp493nj8ufq6pelevq.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,34 @@
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+/app/app.iml
+/.idea
+
+# IntelliJ IDEA
+.idea
+*.iml
+*.ipr
+*.iws
+classes
+gen-external-apklibs
+
+# Gradle
+.gradle
+build
+gradle.properties
+
+# Maven
+target
+release.properties
+pom.xml.*
+
+# Java class files
+*.class
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+*.prefs

@@ -1,54 +1,55 @@
 package com.hyxen.adlocus;
 
 import android.Manifest;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.hyxen.adlocusaar.AdLocus;
-import com.hyxen.adlocusaar.AdLocusHelp;
-import com.hyxen.adlocusaar.constants.Constants;
-import com.hyxen.adlocusaar.repository.remote.RemoteAPI;
-import com.hyxen.adlocusaar.util.AdLocusUtil;
-import com.hyxen.adlocusaar.util.Log;
-import com.hyxen.adlocusaar.utils.Base64;
-import com.hyxen.adlocusaar.utils.Logger;
-import com.hyxen.adlocusaar.utils.RSAUtils;
-import com.hyxen.adlocusaar.view.main.AdLocusActivity;
-import com.hyxen.adlocusaar.view.main.AdLocusContract;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Locale;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.TimeUnit;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+//import com.google.firebase.iid.FirebaseInstanceId;
+//import com.hyxen.adlocusaar.AdLocus;
+//import com.hyxen.adlocusaar.utils.AdLocusUtil;
 
 public class MainActivity extends AppCompatActivity  {
 
     private static final int TAG_LOCATION = 100;
+    private static final int TAG_NOTIFICATIONS = 101;
+    public String appkey="67ab3995eeb8efd913e9ce408c745a68804df01d";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        appkey=getString(R.string.app_key);
+        AdLocus.getInstance(this)
+                    .checkUserStatement( "",getString(R.string.fcm_app_key), getPackageName(), appkey);
+
+
+        if(android.os.Build.VERSION.SDK_INT>= 33 ){
+            if(ActivityCompat.checkSelfPermission(this, "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED){
+                ActivityCompat.requestPermissions(this, new String[]{"android.permission.POST_NOTIFICATIONS"}, TAG_NOTIFICATIONS);
+            }else {
+                TestAD();
+            }
+        }else TestAD();
+
+
+
+
+//        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(this);
+//        pref.edit().putString("hash_device_id","and://1962e1a1b736a32b7ca3b86bda42fdc45f26603f");
+
+
 //        Intent intent = new Intent(this, AdLocusActivity.class);
 //        intent.setAction(AdLocusContract.ACTION_CLICK);
 //        intent.putExtra(Constants.TAG_INTENT_URL, "https://card.apply.hsbc.com.tw/hsbcoa/oaadd?cardid=1&BannerID=ALS08");
@@ -121,49 +122,69 @@ public class MainActivity extends AppCompatActivity  {
 //        }
 
 
+//        AdLocusUtil.getAndroidIDStatement(this);
+//        AdLocusUtil.getAndroidIDStatement(this);
 
+//
+//
+//        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+//            String token = FirebaseInstanceId.getInstance().getToken();
+//            AdLocus.getInstance(this)
+//                    .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
+//                            getString(R.string.fcm_app_key), getPackageName(), appkey);
+////            AdLocus.getInstance().receverAlarmAD(this,Constants.TAG_FCM_GA,"16226999405802","16216089796250");
+//        } else {
+//            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, TAG_LOCATION);
+//        }
 
+//        AdLocus.setDebug(this,false);
+//        Logger.e("TAG", "[fcmMessage]:"+Constants.TAG_FCM_LC);
+//        Map<String, String> fcmMessage=new TreeMap<>();
+//        fcmMessage.put("type",Constants.TAG_FCM_LC);
+//        AdLocus.getInstance().sendFCMMessage(this,fcmMessage);
+//
+//        String lbsstr= "{\"pt\":[{\"ad_id\":\"161972022358231011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.019461\",\"lon\":\"121.542305\",\"radius\":\"1550\"},{\"lat\":\"25.043152\",\"lon\":\"121.525536\",\"radius\":\"1550\"}],\"session_id\":\"16197408040848\"},{\"ad_id\":\"161912044142341011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.013651\",\"lon\":\"121.466765\",\"radius\":\"2000\"}],\"session_id\":\"16191360040784\"},{\"ad_id\":\"161972048435731011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.019461\",\"lon\":\"121.542305\",\"radius\":\"1550\"},{\"lat\":\"25.043152\",\"lon\":\"121.525536\",\"radius\":\"1550\"}],\"session_id\":\"16197408040849\"},{\"ad_id\":\"161912055358021011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.013651\",\"lon\":\"121.466765\",\"radius\":\"2000\"}],\"session_id\":\"16191360040783\"},{\"ad_id\":\"161912091316621011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.013651\",\"lon\":\"121.466765\",\"radius\":\"2000\"}],\"session_id\":\"16191360040782\"},{\"ad_id\":\"161972059208041011\",\"begin_ts\":\"1619971200\",\"end_ts\":\"1620057600\",\"fcm_push\":\"1\",\"llr\":[{\"lat\":\"25.019461\",\"lon\":\"121.542305\",\"radius\":\"1550\"},{\"lat\":\"25.043152\",\"lon\":\"121.525536\",\"radius\":\"1550\"}],\"session_id\":\"16197408040850\"}],\"err\":\"0\"}";
+//        Repository.setLbsTaskJson(lbsstr);
+//        LbsChecker.getInstance(this).startAlarmTimer();
 
-
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            String token = FirebaseInstanceId.getInstance().getToken();
-            AdLocus.getInstance(this)
-                    .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
-                            getString(R.string.fcm_app_key), getPackageName(), getString(R.string.app_key));
-        } else {
-            ActivityCompat.requestPermissions(MainActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, TAG_LOCATION);
-        }
-
-
-        Logger.e("TAG", "[fcmMessage]:"+Constants.TAG_FCM_LC);
-        Map<String, String> fcmMessage=new TreeMap<>();
-        fcmMessage.put("type",Constants.TAG_FCM_LC);
-        AdLocus.getInstance().sendFCMMessage(this,fcmMessage);
     }
+//
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode,
+//                                           String permissions[], int[] grantResults) {
+//        switch (requestCode) {
+//            case TAG_LOCATION: {
+//                // If request is cancelled, the result arrays are empty.
+//                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+//                    // permission was granted, yay! Do the
+//                    // contacts-related task you need to do.
+////                    String token = FirebaseInstanceId.getInstance().getToken();
+//                    String token = "test";
+//                    AdLocus.getInstance(this)
+//                            .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
+//                                    getString(R.string.fcm_app_key), getPackageName(), appkey);
+//                } else {
+////                    String token = FirebaseInstanceId.getInstance().getToken();
+//                    String token = "test";
+//                    AdLocus.getInstance(this)
+//                            .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
+//                                    getString(R.string.fcm_app_key), getPackageName(), appkey);
+//                }
+//                return;
+//            }
+//        }
+//    }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case TAG_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
-                    String token = FirebaseInstanceId.getInstance().getToken();
-                    AdLocus.getInstance(this)
-                            .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
-                                    getString(R.string.fcm_app_key), getPackageName(), getString(R.string.app_key));
-                } else {
-                    String token = FirebaseInstanceId.getInstance().getToken();
-                    AdLocus.getInstance(this)
-                            .checkUserStatement(!TextUtils.isEmpty(token) ? token : "",
-                                    getString(R.string.fcm_app_key), getPackageName(), getString(R.string.app_key));
-                }
-                return;
-            }
-        }
+    public void TestAD(){
+        Map<String, String> jsonData = new HashMap<>();
+        jsonData.put("title", "mytitle");
+        jsonData.put("body", "測試時定位關掉才會比較順");
+        jsonData.put("url", "myurl");
+        jsonData.put("type", "TEST");
+        jsonData.put("adid", "17037696780777");
+        jsonData.put("sessionid", "16624800102833");
+        jsonData.put("target", "AdLocusSDK");
+        AdLocus.getInstance().sendFCMMessage(this,jsonData);
     }
 }
