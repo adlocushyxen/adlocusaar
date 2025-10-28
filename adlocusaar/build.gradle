@@ -12,13 +12,13 @@ android {
         //minSdkVersion 19
         minSdkVersion 26
         targetSdkVersion 35
-        versionCode 174
-        versionName "4.1.54"
+        versionCode 175
+        versionName "4.1.55"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         // Library 模組要手動生成 BuildConfig 常量
-        buildConfigField "String", "VERSION_NAME", "\"4.1.54\""
-        buildConfigField "int", "VERSION_CODE", "174"
+        buildConfigField "String", "VERSION_NAME", "\"4.1.55\""
+        buildConfigField "int", "VERSION_CODE", "175"
 
     }
 
