@@ -29,6 +29,8 @@ public class Constants {
     public static final String TAG_CELL_TYPE = "cell_type";
     public static final String TAG_LOC_TYPE = "loc_type";
 
+    public static final String TAG_POST_NOTIFICATIONS = "post_notifications";
+
 
     public static final String TAG_AD_TYPE_LIMIT = "0"; // 廣告已達標
     public static final String TAG_AD_TYPE_ICON = "1"; // 文 + icon

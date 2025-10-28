@@ -22,24 +22,24 @@ import okhttp3.Response;
 public class PushBotDebug {
     private static final java.lang.String TAG = PushBotDebug.class.getSimpleName();
     public static void push(TreeMap<String,String> map){
-        OkHttpClient client = new OkHttpClient();
-        Request.Builder bb=new Request.Builder();
-        FormBody.Builder builder = new FormBody.Builder();
-        for(Map.Entry<String,String> entry:map.entrySet()){
-            builder.add(entry.getKey(), entry.getValue());
-        }
-        RequestBody requestBody=builder.build();
-        Request request_bot = bb.url("https://hyxen.slack.com/services/hooks/slackbot?token=NIPcyGkN1cWjs48A7ny7sWLV&channel=customer_fcm_token").post(requestBody).build();
-        if(AdLocus.isDebug()) Logger.d(TAG, "[push] https://hyxen.slack.com/services/hooks/slackbot?token=NIPcyGkN1cWjs48A7ny7sWLV&channel=customer_fcm_token");
-        client.newCall(request_bot).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if(AdLocus.isDebug())e.printStackTrace();
-            }
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if(AdLocus.isDebug()) Logger.d(TAG, "[push onResponse] "+response.code());
-            }
-        });
+//        OkHttpClient client = new OkHttpClient();
+//        Request.Builder bb=new Request.Builder();
+//        FormBody.Builder builder = new FormBody.Builder();
+//        for(Map.Entry<String,String> entry:map.entrySet()){
+//            builder.add(entry.getKey(), entry.getValue());
+//        }
+//        RequestBody requestBody=builder.build();
+//        Request request_bot = bb.url("https://hyxen.slack.com/services/hooks/slackbot?token=NIPcyGkN1cWjs48A7ny7sWLV&channel=customer_fcm_token").post(requestBody).build();
+//        if(AdLocus.isDebug()) Logger.d(TAG, "[push] https://hyxen.slack.com/services/hooks/slackbot?token=NIPcyGkN1cWjs48A7ny7sWLV&channel=customer_fcm_token");
+//        client.newCall(request_bot).enqueue(new Callback() {
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                if(AdLocus.isDebug())e.printStackTrace();
+//            }
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                if(AdLocus.isDebug()) Logger.d(TAG, "[push onResponse] "+response.code());
+//            }
+//        });
     }
 }

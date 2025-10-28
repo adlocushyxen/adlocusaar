@@ -1,15 +1,23 @@
 package com.hyxen.adlocusaar;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+//import android.support.annotation.NonNull;
+
+//import androidx.annotation.NonNull;
 
 import java.util.Map;
+
+import io.reactivex.annotations.NonNull;
 
 public interface IAdLocus {
     /**
      * register APP to Server
+     * @param fcmToken
+     * @param fcmAppKey
+     * @param appPackageName
+     * @param appKey
      */
-    void registerApp();
+    void registerApp(String fcmToken, @NonNull String fcmAppKey, @NonNull String appPackageName, @NonNull String appKey);
 
     /**
      * Update Push Token

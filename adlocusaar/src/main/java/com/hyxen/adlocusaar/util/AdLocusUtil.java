@@ -20,8 +20,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.content.ContextCompat;
+//import android.support.v4.app.NotificationManagerCompat;
+//import android.support.v4.content.ContextCompat;
+
+import androidx.core.app.NotificationManagerCompat;
+import androidx.core.content.ContextCompat;
 
 import com.hyxen.adlocusaar.AdActivity;
 import com.hyxen.adlocusaar.AdLocusLayout;
@@ -30,6 +33,8 @@ import com.hyxen.adlocusaar.AdLocusManager;
 import com.hyxen.adlocusaar.AdLocusTargeting;
 import com.hyxen.adlocusaar.AdLocusTargeting.Gender;
 import com.hyxen.adlocusaar.BuildConfig;
+import com.hyxen.adlocusaar.UserBaseData;
+import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.engine.CellInfo;
 import com.hyxen.adlocusaar.engine.HxCellEngine;
 import com.hyxen.adlocusaar.engine.HxWifiEngine;
@@ -39,6 +44,7 @@ import com.hyxen.adlocusaar.obj.AdLocusAd;
 import com.hyxen.adlocusaar.push.PushService;
 import com.hyxen.adlocusaar.push.TestUtil;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.hyxen.adlocusaar.repository.Repository;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -78,10 +84,10 @@ public class AdLocusUtil
 	private static final String PREFERENCE_TARGETING = "targeting";
 
 //	private static final String HOST_RD = "http://hyxen-adlocus-api.rd.hyxencloud.com/";
-	private static final String HOST_RD = "https://paul.adlocus_api.dev.hxcld.com/";
+//	private static final String HOST_RD = "https://paul.adlocus_api.dev.hxcld.com/";
 	private static final String HOST_ADLOCUS = "https://a.api.ad-locus.com/";
 
-	private static final String HOST_DATA_RD = "https://data.rd.adlocus.com/";
+//	private static final String HOST_DATA_RD = "https://data.rd.adlocus.com/";
 	private static final String HOST_DATA_ADLOCUS = "https://data.adlocus.com/";
 
 	private static final String REDIRECTS_CHECK_URL_RD = "hyxencloud.com";
@@ -96,17 +102,21 @@ public class AdLocusUtil
 	public static final String REDIRECTS_CHECK_URL;
     public static final int VERSION_INT;
     static {
-        if (DEBUG) {
-            HOST = HOST_RD;
-			HOST_DATA = HOST_DATA_RD;
-            REDIRECTS_CHECK_URL = REDIRECTS_CHECK_URL_RD;
-            VERSION_INT = 0;
-        } else {
-            HOST = HOST_ADLOCUS;
-			HOST_DATA = HOST_DATA_ADLOCUS;
-	        REDIRECTS_CHECK_URL = REDIRECTS_CHECK_URL_ADLOCUS;
-            VERSION_INT = 17; // modified this if you change the one service algorithm
-        }
+//        if (DEBUG) {
+//            HOST = HOST_RD;
+//			HOST_DATA = HOST_DATA_RD;
+//            REDIRECTS_CHECK_URL = REDIRECTS_CHECK_URL_RD;
+//            VERSION_INT = 0;
+//        } else {
+//            HOST = HOST_ADLOCUS;
+//			HOST_DATA = HOST_DATA_ADLOCUS;
+//	        REDIRECTS_CHECK_URL = REDIRECTS_CHECK_URL_ADLOCUS;
+//            VERSION_INT = 17; // modified this if you change the one service algorithm
+//        }
+		HOST = HOST_ADLOCUS;
+		HOST_DATA = HOST_DATA_ADLOCUS;
+		REDIRECTS_CHECK_URL = REDIRECTS_CHECK_URL_ADLOCUS;
+		VERSION_INT = 17; // modified this if you change the one service algorithm
     }
 
 	
@@ -456,31 +466,41 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 	 *
 	 * @return The encoded device id.
 	 */
-	public static String getEncodedDeviceId(Context context)
-	{
-		String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        androidId = androidId + DEBUG_DEVICE_ID;
-		
-		String hashedId;
-		if ((androidId == null) || isEmulator())
-		{
-			hashedId = hashId("emulator");
-		}
-		else
-		{
-			hashedId = hashId(androidId);
-		}
-
-		if (hashedId == null)
-		{
-			return null;
-		}
-
-		return hashedId;
-	}
+//	public static String getEncodedDeviceId(Context context)
+//	{
+//		String hashedId;
+//		int userStatement = Repository.getUserAndroidIdState();
+//		if(userStatement != Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+//			hashedId = hashId("emulator");
+//			return hashedId;
+//		}
+//		String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+//
+//        androidId = androidId + DEBUG_DEVICE_ID;
+//
+//
+//		if ((androidId == null) || isEmulator())
+//		{
+//			hashedId = hashId("emulator");
+//		}
+//		else
+//		{
+//			hashedId = hashId(androidId);
+//		}
+//
+//		if (hashedId == null)
+//		{
+//			return null;
+//		}
+//
+//		return hashedId;
+//	}
 
 	public static String getAdId(Context context){
+		int userStatement = Repository.getUserAndroidIdState();
+		if(userStatement != Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+			return null;
+		}
 		try {
 			AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context.getApplicationContext());
 			if (idInfo != null) return "and:"+idInfo.getId();
@@ -493,39 +513,43 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 	}
 
 
-	public static String getMac(Context context) {
+//	public static String getMac(Context context) {
+//		int userStatement = Repository.getUserAndroidIdState();
+//		if(userStatement != Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+//			return MAC_DEFAULT;
+//		}
+//
+//		WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+//		android.net.wifi.WifiInfo info = manager.getConnectionInfo();
+//		String mac = info.getMacAddress();
+//		if (mac != null && !mac.equals(MAC_DEFAULT)) return mac;
+//		return getMac6();
+//	}
 
-		WifiManager manager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-		android.net.wifi.WifiInfo info = manager.getConnectionInfo();
-		String mac = info.getMacAddress();
-		if (mac != null && !mac.equals(MAC_DEFAULT)) return mac;
-		return getMac6();
-	}
-
-	private static String getMac6() {
-		try {
-			List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-			for (NetworkInterface nif : all) {
-				if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-				byte[] macBytes = nif.getHardwareAddress();
-				if (macBytes == null) {
-					return "";
-				}
-
-				StringBuilder res1 = new StringBuilder();
-				for (byte b : macBytes) {
-					res1.append(Integer.toHexString(b & 0xFF)).append(":");
-				}
-
-				if (res1.length() > 0) {
-					res1.deleteCharAt(res1.length() - 1);
-				}
-				return res1.toString();
-			}
-		} catch (Exception ignored) { }
-		return MAC_DEFAULT;
-	}
+//	private static String getMac6() {
+//		try {
+//			List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+//			for (NetworkInterface nif : all) {
+//				if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+//
+//				byte[] macBytes = nif.getHardwareAddress();
+//				if (macBytes == null) {
+//					return "";
+//				}
+//
+//				StringBuilder res1 = new StringBuilder();
+//				for (byte b : macBytes) {
+//					res1.append(Integer.toHexString(b & 0xFF)).append(":");
+//				}
+//
+//				if (res1.length() > 0) {
+//					res1.deleteCharAt(res1.length() - 1);
+//				}
+//				return res1.toString();
+//			}
+//		} catch (Exception ignored) { }
+//		return MAC_DEFAULT;
+//	}
 
 	/**
 	 * Method for returning an hashId hash of a string.
@@ -729,9 +753,11 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 	{
 		int ret;
 		setToRequest(r, adLocusTargeting);
-		r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+//		r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+		r.setPostParameter("device_id", UserBaseData.getHashDeviceId(context));
 		r.setPostParameter("d_ad_id", AdLocusUtil.getAdId(context));
-		r.setPostParameter("device_mac", AdLocusUtil.getMac(context));
+//		r.setPostParameter("device_mac", AdLocusUtil.getMac(context));
+		r.setPostParameter("device_mac", UserBaseData.getMac(context));
 		r.setPostParameter("key", key);
 		r.setPostParameter("v_str", AdLocusUtil.VERSION_STRING);
 		if (screen != null) r.setPostParameter("screen", screen);
@@ -746,7 +772,12 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 			r.setPostParameter("accel", "1");
 		}
 
-		CellInfo ci = HxCellEngine.getInstance(context).getValidCellInfo();
+		CellInfo ci=null;
+		int userStatement = Repository.getUserAndroidIdState();
+		if(userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+			ci = HxCellEngine.getInstance(context).getValidCellInfo();
+		}
+//		CellInfo ci = HxCellEngine.getInstance(context).getValidCellInfo();
 
 		if (ci != null)
 		{
@@ -785,29 +816,34 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 		return ret;
 	}
 	
-	public static int getJsonLinkDevType(Context context)
-	{
-		CellInfo ci = HxCellEngine.getInstance(context).getValidCellInfo();
-		if (ci != null)
-		{
-			/*
-			 * 1 - Android Phone, 3 - Android Pad, 4 - iOS 加密,  5 - IP
-			 */
-			return ("11," + ci.getMcc() + "," + ci.getMnc()).hashCode();
-		}
-		else
-		{
-			String mac = HxWifiEngine.getInstance(context).getAMac();
-			if (mac != null)
-			{
-				return 3;
-			}
-			else
-			{
-				return 5;
-			}
-		}
-	}
+//	public static int getJsonLinkDevType(Context context)
+//	{
+//		CellInfo ci = null;
+//		int userStatement = Repository.getUserAndroidIdState();
+//		if(userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+//			ci = HxCellEngine.getInstance(context).getValidCellInfo();
+//		}
+////		CellInfo ci = HxCellEngine.getInstance(context).getValidCellInfo();
+//		if (ci != null)
+//		{
+//			/*
+//			 * 1 - Android Phone, 3 - Android Pad, 4 - iOS 加密,  5 - IP
+//			 */
+//			return ("11," + ci.getMcc() + "," + ci.getMnc()).hashCode();
+//		}
+//		else
+//		{
+//			String mac = HxWifiEngine.getInstance(context).getAMac();
+//			if (mac != null)
+//			{
+//				return 3;
+//			}
+//			else
+//			{
+//				return 5;
+//			}
+//		}
+//	}
 
 	/**
 	 *
@@ -891,14 +927,14 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 		}
 		else
 		{
-			WifiInfo wi = HxWifiEngine.getInstance(context).getAWifiInfo();
-			if(wi !=null)
-			{
-				request.setPostParameter("mcc", "-1");
-				request.setPostParameter("mnc", "-1");
-				request.setPostParameter("mac", wi.getMac());
-				request.setPostParameter("rssi", String.valueOf(wi.getRssi()));
-			}
+//			WifiInfo wi = HxWifiEngine.getInstance(context).getAWifiInfo();
+//			if(wi !=null)
+//			{
+//				request.setPostParameter("mcc", "-1");
+//				request.setPostParameter("mnc", "-1");
+//				request.setPostParameter("mac", wi.getMac());
+//				request.setPostParameter("rssi", String.valueOf(wi.getRssi()));
+//			}
 		}
 	}
 	
@@ -909,52 +945,52 @@ public static final String URL_DATA_COLLECTION = HOST_DATA + "new_log/and_device
 	 * Error(-2) Version停用<br/>
 	 * Error(-255)系統錯誤<br/>
 	 */
-	public static void auth(final Context context, final String key, final AuthListener listener)
-	{
-		/*fixme: move code from AdLocusManager to here
-com/adlocus/AdLocusLayout.java:607:				int err = adLocusLayout.adLocusManager.fetchAuth();
-com/adlocus/AdLocusManager.java:126:	public int fetchAuth()
-com/adlocus/AdLocusManager.java:135:		return fetchAuth(context, key);
-com/adlocus/AdLocusManager.java:148:	public synchronized static int fetchAuth(Context context, String key)
-com/adlocus/util/AdLocusUtil.java:934:				while((err = AdLocusManager.fetchAuth(context, key)) == -999)
-com/adlocus/PushAd.java:60:        AdLocusUtil.auth(context, appKey, new AdLocusUtil.AuthListener()
-com/adlocus/AdLocusManager.java:188:	private static int parseAuth(String authJson)
-com/adlocus/AdLocusManager.java:191:		if (authJson != null)
-com/adlocus/AdLocusManager.java:195:				JSONObject o = new JSONObject(authJson); 
-		 */
-		
-		Log.v("checking key...");
-		Log.v("version:" + AdLocusUtil.VERSION_STRING + ", type: " + AdLocusUtil.HOST );
-		
-		new Thread()
-		{
-			int delay = 5000;				
-			
-			@Override
-			public void run()
-			{
-				int err = -999;
-				while((err = AdLocusManager.fetchAuth(context, key)) == -999)
-				{
-					SystemClock.sleep(delay *= 2);
-				}
-				if(err == 0)
-				{
-					Log.v("key is vaild.");
-				}
-				else
-				{
-					Log.v("key is invaild.");
-				}
-				listener.onChecked(err);
-			}
-		}.start();
-	}
+//	public static void auth(final Context context, final String key, final AuthListener listener)
+//	{
+//		/*fixme: move code from AdLocusManager to here
+//com/adlocus/AdLocusLayout.java:607:				int err = adLocusLayout.adLocusManager.fetchAuth();
+//com/adlocus/AdLocusManager.java:126:	public int fetchAuth()
+//com/adlocus/AdLocusManager.java:135:		return fetchAuth(context, key);
+//com/adlocus/AdLocusManager.java:148:	public synchronized static int fetchAuth(Context context, String key)
+//com/adlocus/util/AdLocusUtil.java:934:				while((err = AdLocusManager.fetchAuth(context, key)) == -999)
+//com/adlocus/PushAd.java:60:        AdLocusUtil.auth(context, appKey, new AdLocusUtil.AuthListener()
+//com/adlocus/AdLocusManager.java:188:	private static int parseAuth(String authJson)
+//com/adlocus/AdLocusManager.java:191:		if (authJson != null)
+//com/adlocus/AdLocusManager.java:195:				JSONObject o = new JSONObject(authJson);
+//		 */
+//
+//		Log.v("checking key...");
+//		Log.v("version:" + AdLocusUtil.VERSION_STRING + ", type: " + AdLocusUtil.HOST );
+//
+//		new Thread()
+//		{
+//			int delay = 5000;
+//
+//			@Override
+//			public void run()
+//			{
+//				int err = -999;
+//				while((err = AdLocusManager.fetchAuth(context, key)) == -999)
+//				{
+//					SystemClock.sleep(delay *= 2);
+//				}
+//				if(err == 0)
+//				{
+//					Log.v("key is vaild.");
+//				}
+//				else
+//				{
+//					Log.v("key is invaild.");
+//				}
+//				listener.onChecked(err);
+//			}
+//		}.start();
+//	}
 	
-	public interface AuthListener
-	{
-		void onChecked(int err);
-	}
+//	public interface AuthListener
+//	{
+//		void onChecked(int err);
+//	}
 	
     public static Bitmap getApplicationIconBitmap(Context context, int widthInPixels, int heightInPixels)
     {
@@ -999,17 +1035,17 @@ com/adlocus/AdLocusManager.java:195:				JSONObject o = new JSONObject(authJson);
 		return (version >= Build.VERSION_CODES.LOLLIPOP);
 	}
 
-	public static void testString(String json,Context ctx)
-	{
-
-		AdLocusAd a = AdLocusManager.parseProMeAdJsonString(json);
-
-		int type = a.type;
-
-		if(type == AdLocusUtil.AD_TYPE_BANNER || type == AdLocusUtil.AD_TYPE_ICON || type == AdLocusUtil.AD_TYPE_BIGVIEW)
-		{
-			AdLocusNotification.showNotification(ctx, a);
-		}
-
-	}
+//	public static void testString(String json,Context ctx)
+//	{
+//
+//		AdLocusAd a = AdLocusManager.parseProMeAdJsonString(json);
+//
+//		int type = a.type;
+//
+//		if(type == AdLocusUtil.AD_TYPE_BANNER || type == AdLocusUtil.AD_TYPE_ICON || type == AdLocusUtil.AD_TYPE_BIGVIEW)
+//		{
+//			AdLocusNotification.showNotification(ctx, a);
+//		}
+//
+//	}
 }

@@ -6,21 +6,23 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+//import android.graphics.Canvas;
+//import android.graphics.drawable.BitmapDrawable;
+//import android.graphics.drawable.Drawable;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.content.ContextCompat;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
+//import android.support.annotation.NonNull;
+//import android.support.annotation.Nullable;
+//import android.support.v4.content.ContextCompat;
+//import android.text.Spannable;
+//import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
-import android.text.style.AbsoluteSizeSpan;
-import android.text.style.ForegroundColorSpan;
+//import android.text.style.AbsoluteSizeSpan;
+//import android.text.style.ForegroundColorSpan;
+
+import androidx.annotation.NonNull;
 
 import com.bluelinelabs.logansquare.LoganSquare;
-import com.hyxen.adlocusaar.R;
+//import com.hyxen.adlocusaar.R;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -393,6 +395,13 @@ public class MiscUtils {
 
         return appIconResId;
     }
+
+    public static String getApplicationName(Context context) {
+        ApplicationInfo applicationInfo = context.getApplicationInfo();
+        int stringId = applicationInfo.labelRes;
+        return stringId == 0 ? applicationInfo.nonLocalizedLabel.toString() : context.getString(stringId);
+    }
+
     public static String getRequestBodyToString(final RequestBody requestBody){
         try {
             final Buffer buffer = new Buffer();

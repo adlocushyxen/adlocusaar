@@ -26,53 +26,53 @@ import com.hyxen.adlocusaar.util.AdLocusUtil;
 
 public class PushAd
 {
-    public static void enablePush(final Context context, final String appKey, Intent backgroundIntent)
-    {
-        init(context, appKey, null, backgroundIntent);
-    }
+//    public static void enablePush(final Context context, final String appKey, Intent backgroundIntent)
+//    {
+//        init(context, appKey, null, backgroundIntent);
+//    }
+//
+//    public static void enablePush(final Context context, final String appKey, Intent backgroundIntent, AdLocusTargeting adLocusTargeting)
+//    {
+//        init(context, appKey, adLocusTargeting, backgroundIntent);
+//    }
+//
+//    public static void enablePush(final Context context, final String appKey)
+//    {
+//        init(context, appKey, null, null);
+//    }
+//
+//    public static void enablePush(final Context context, final String appKey, AdLocusTargeting adLocusTargeting)
+//    {
+//        init(context, appKey, adLocusTargeting, null);
+//    }
     
-    public static void enablePush(final Context context, final String appKey, Intent backgroundIntent, AdLocusTargeting adLocusTargeting)
-    {
-        init(context, appKey, adLocusTargeting, backgroundIntent);
-    }
-    
-    public static void enablePush(final Context context, final String appKey)
-    {
-        init(context, appKey, null, null);
-    }
-
-    public static void enablePush(final Context context, final String appKey, AdLocusTargeting adLocusTargeting)
-    {
-        init(context, appKey, adLocusTargeting, null);
-    }
-    
-    private static void init(final Context context, final String appKey, AdLocusTargeting adLocusTargeting, Intent backgroundIntent)
-    {
-        AdLocusUtil.setNewPushBackgroundIntent(context, backgroundIntent);
-        AdLocusUtil.setPushTargeting(context, adLocusTargeting);
-        AdLocusUtil.setPushKey(context, appKey);
-        Collection.report(context);
-        AdLocusUtil.auth(context, appKey, new AdLocusUtil.AuthListener() {
-
-            @Override
-            public void onChecked(int err) {
-                if (err == 0) {
-                    ServiceUtil.sendCheckService(context, appKey);
-                } else {
-                    ServiceUtil.saveValidKey(context, null);
-                }
-            }
-        });
-        AdLocusUtil.checkSelfPermission(context);
-    }
-    
-
-    public static void disablePush(Context context)
-    {
-        AdLocusUtil.setPushKey(context, null);
-        ServiceUtil.saveValidKey(context, null);
-        ServiceUtil.sendCheckService(context, null);
-    }
+//    private static void init(final Context context, final String appKey, AdLocusTargeting adLocusTargeting, Intent backgroundIntent)
+//    {
+//        AdLocusUtil.setNewPushBackgroundIntent(context, backgroundIntent);
+//        AdLocusUtil.setPushTargeting(context, adLocusTargeting);
+//        AdLocusUtil.setPushKey(context, appKey);
+//        Collection.report(context);
+//        AdLocusUtil.auth(context, appKey, new AdLocusUtil.AuthListener() {
+//
+//            @Override
+//            public void onChecked(int err) {
+//                if (err == 0) {
+//                    ServiceUtil.sendCheckService(context, appKey);
+//                } else {
+//                    ServiceUtil.saveValidKey(context, null);
+//                }
+//            }
+//        });
+//        AdLocusUtil.checkSelfPermission(context);
+//    }
+//
+//
+//    public static void disablePush(Context context)
+//    {
+//        AdLocusUtil.setPushKey(context, null);
+//        ServiceUtil.saveValidKey(context, null);
+//        ServiceUtil.sendCheckService(context, null);
+//    }
 
     public static void test(Context context)
     {
@@ -176,8 +176,8 @@ public class PushAd
         rootLayout.addView(tv, lp);
         dialog.setContentView(rootLayout);
         
-        webView.loadUrl(String.format("https://user.ad-locus.com/pref/set?device_id=%s&app_key=%s", AdLocusUtil.getEncodedDeviceId(activity), appKey));
-
+//        webView.loadUrl(String.format("https://user.ad-locus.com/pref/set?device_id=%s&app_key=%s", AdLocusUtil.getEncodedDeviceId(activity), appKey));
+        webView.loadUrl(String.format("https://user.ad-locus.com/pref/set?device_id=%s&app_key=%s", UserBaseData.getHashDeviceId(activity), appKey));
         dialog.show();
     }
     

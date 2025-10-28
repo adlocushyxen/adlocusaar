@@ -349,7 +349,7 @@ public class ServiceUtil
 			Intent i = getIntent(context, ACTION_CHECK_DELAY, context.getPackageName());
 			i.setClass(context, PushReceive.class);
 			
-			PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_CODE_CHECK, i, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT);
+			PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_CODE_CHECK, i, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 			setAlarm(am, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + delayMillis, pi);
 		}
 	}
@@ -396,7 +396,7 @@ public class ServiceUtil
 		
 		Intent i = getIntent(context, isCurrentService ? ACTION_CHECK_ALIVE : ACTION_CHECK_EVERY_HOUR, context.getPackageName());
 		i.setClass(context, PushReceive.class);
-		PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_CODE_CHECK_EVENT_HOUR, i, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT);  
+		PendingIntent pi = PendingIntent.getBroadcast(context, REQUEST_CODE_CHECK_EVENT_HOUR, i, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
 
 		setAlarm(am, AlarmManager.RTC_WAKEUP, regTs, pi);
@@ -776,7 +776,7 @@ public class ServiceUtil
 			if(context.getPackageName().equals(intent.getStringExtra(ServiceUtil.EXTRA_SENDER))) {
 				Intent ii = ServiceUtil.getIntent(context, ServiceUtil.ACTION_CHECK_DONE, context.getPackageName());
 				ii.setClass(context, PushReceive.class);
-				PendingIntent pi = PendingIntent.getBroadcast(context, 12345, ii, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT);
+				PendingIntent pi = PendingIntent.getBroadcast(context, 12345, ii, PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
 				AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 				ServiceUtil.setAlarm(am, AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 30000, pi);

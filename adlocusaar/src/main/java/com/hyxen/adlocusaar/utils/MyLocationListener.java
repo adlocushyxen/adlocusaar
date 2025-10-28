@@ -4,9 +4,11 @@ import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+//import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
+
+import androidx.annotation.NonNull;
 
 import com.hyxen.adlocusaar.AdLocus;
 import com.hyxen.adlocusaar.constants.ApiStatus;
@@ -256,13 +258,16 @@ public class MyLocationListener implements LocationListener {
                     @Override
                     public void accept(Throwable throwable) throws Exception {
                         if(throwable!=null){
-                            ApiException e = (ApiException) throwable;
-                            int code = e.getCode();
-                            Logger.d(TAG, String.format("Total onFailed : %1$d.%2$s", code, e.getMessage()));
+                            try{
+                                ApiException e = (ApiException) throwable;
+                                int code = e.getCode();
+                                Logger.d(TAG, String.format("Total onFailed : %1$d.%2$s", code, e.getMessage()));
 
-                            if (code == ApiStatus.NETWORK_TIMEOUT && mCurrentAPI == TAG_API_IMPRESSION) {
-                                AdLocusNotification.showNotification(context, mResponse);
-                            }
+                                if (code == ApiStatus.NETWORK_TIMEOUT && mCurrentAPI == TAG_API_IMPRESSION) {
+                                    AdLocusNotification.showNotification(context, mResponse);
+                                }
+                            }catch(Exception e){}
+
                         }
                         release();
                     }
@@ -285,7 +290,8 @@ public class MyLocationListener implements LocationListener {
      * Stop gps
      */
     private void stopListenerGPS() {
-        mListener.end();
+        try{if(mListener!=null)mListener.end();}catch(Exception e){}
+
     }
 
     /**

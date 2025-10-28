@@ -8,11 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
+//import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RemoteViews;
 
+import androidx.core.app.NotificationCompat;
+
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.view.main.AdLocusActivity;
 import com.hyxen.adlocusaar.R;
@@ -45,9 +48,12 @@ public class NotificationHelp {
      * @param adData
      */
     private static void notificationConfig(Context context, GetNewAndResponse adData) {
+        String appname=MiscUtils.getApplicationName(context);
+        if(appname!=null && appname.length()>5)appname=appname.substring(0,4)+"...";
+        appname = UserBaseData.getAppName(context,appname);
         mBuilder.setSmallIcon(getIcon(context))
                 .setPriority(Notification.PRIORITY_DEFAULT)
-                .setContentTitle(!TextUtils.isEmpty(adData.getAdTitle()) ? adData.getAdTitle() : "")
+                .setContentTitle(!TextUtils.isEmpty(adData.getAdTitle()) ? appname+":"+adData.getAdTitle() : appname)
                 .setShowWhen(false)
                 .setContentText(!TextUtils.isEmpty(adData.getAdBody()) ? adData.getAdBody() : "")
                 .setVibrate(new long[0])
@@ -85,7 +91,8 @@ public class NotificationHelp {
         intent.putExtra(Constants.TAG_INTENT_KEY_TRACK_IMP, trackImp);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -102,7 +109,8 @@ public class NotificationHelp {
         intent.putExtra(Constants.TAG_INTENT_KEY_TYPE, Constants.TAG_INTENT_SETTING);
         intent.putExtra(Constants.TAG_INTENT_SHARE_DATA, adData);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(context, id + 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        return PendingIntent.getActivity(context, id + 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, id + 1, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -119,7 +127,8 @@ public class NotificationHelp {
         intent.putExtra(Constants.TAG_INTENT_KEY_TYPE, Constants.TAG_INTENT_SHARE);
         intent.putExtra(Constants.TAG_INTENT_SHARE_DATA, adData);
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(context, id + 2, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        return PendingIntent.getActivity(context, id + 2, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, id + 2, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     /**
@@ -256,6 +265,9 @@ public class NotificationHelp {
 
 //        downloadImage(context, adData.getAdIcon());
         init(context, adData);
+        String appname=MiscUtils.getApplicationName(context);
+        if(appname!=null && appname.length()>5)appname=appname.substring(0,4)+"...";
+        appname = UserBaseData.getAppName(context,appname);
 
         int requestCode = (adData.getAdId()).hashCode();
 
@@ -330,9 +342,12 @@ public class NotificationHelp {
         String adId = adData.getAdId();
         int requestCode = (adId).hashCode();
         init(context, adData);
+        String appname=MiscUtils.getApplicationName(context);
+        if(appname!=null && appname.length()>5)appname=appname.substring(0,4)+"...";
+        appname = UserBaseData.getAppName(context,appname);
 
         mCustomView = new RemoteViews(context.getPackageName(), R.layout.bv_content);
-        mCustomView.setTextViewText(R.id.b_textview_title, !TextUtils.isEmpty(adData.getAdTitle()) ? adData.getAdTitle() : "");
+        mCustomView.setTextViewText(R.id.b_textview_title, !TextUtils.isEmpty(adData.getAdTitle()) ? appname+":"+adData.getAdTitle() : appname);
         mCustomView.setTextViewText(R.id.b_textview_subtitle, !TextUtils.isEmpty(adData.getAdBody()) ? adData.getAdBody() : "");
         mCustomView.setImageViewResource(R.id.b_imageview_icon, getIcon(context));
         mCustomView.setImageViewBitmap(R.id.b_imageview_bigimage, _mimage);

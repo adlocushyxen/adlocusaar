@@ -2,6 +2,7 @@ package com.hyxen.adlocusaar.push;
 
 import android.content.Context;
 
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.net.HxRequest;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 
@@ -22,25 +23,26 @@ public class EventInfoRequest extends HxRequest
 	{
 		super(context, TestUtil.isTestMode(context) ? AdLocusUtil.URL_PUSH_REQ_TEST : AdLocusUtil.URL_PUSH_REQ);
 
-		setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
-		setPostParameter("key", AdLocusUtil.getPushKey(context));
-		setPostParameter("screen", AdLocusUtil.getSize(context));
-		setPostParameter("ad_id", adId);
-		setPostParameter("session_id", sessionId);
-		setPostParameter("dev_type", "11");
-		
-		if(AdLocusUtil.getNewPushBackgroundIntent(context) != null)
-		{
-			setPostParameter("new_push", "1");	
-		}
-		
-		if(AdLocusUtil.supportBigview())
-		{
-			setPostParameter("bv", "1");
-		}
-
-		AdLocusUtil.setToRequest(this, AdLocusUtil.getPushTargeting(context));
-		AdLocusUtil.setLocationToRequest(context, this);
+//		setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+//		setPostParameter("device_id", UserBaseData.getHashDeviceId(context));
+//		setPostParameter("key", AdLocusUtil.getPushKey(context));
+//		setPostParameter("screen", AdLocusUtil.getSize(context));
+//		setPostParameter("ad_id", adId);
+//		setPostParameter("session_id", sessionId);
+//		setPostParameter("dev_type", "11");
+//
+//		if(AdLocusUtil.getNewPushBackgroundIntent(context) != null)
+//		{
+//			setPostParameter("new_push", "1");
+//		}
+//
+//		if(AdLocusUtil.supportBigview())
+//		{
+//			setPostParameter("bv", "1");
+//		}
+//
+//		AdLocusUtil.setToRequest(this, AdLocusUtil.getPushTargeting(context));
+//		AdLocusUtil.setLocationToRequest(context, this);
 	}
 	
 	public void setFource()

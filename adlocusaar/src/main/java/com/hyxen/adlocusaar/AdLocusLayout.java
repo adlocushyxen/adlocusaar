@@ -34,9 +34,11 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.hyxen.adlocusaar.adapters.AdLocusAdapter;
+import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.engine.HxCellEngine;
 import com.hyxen.adlocusaar.engine.HxWifiEngine;
 import com.hyxen.adlocusaar.obj.Flip3dAnimation;
+import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 
 import java.lang.ref.WeakReference;
@@ -301,9 +303,13 @@ public class AdLocusLayout extends RelativeLayout implements Ad
 		
 		setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
 		setRefreshRate(rotateInterval);
-		
-		HxCellEngine.getInstance(context);
-		HxWifiEngine.getInstance(context);
+
+		int userStatement = Repository.getUserAndroidIdState();
+		if(userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+			HxCellEngine.getInstance(context);
+			HxWifiEngine.getInstance(context);
+		}
+
 				
 		this.activityReference = new WeakReference<>(context);
 		this.superViewReference = new WeakReference<RelativeLayout>(this);

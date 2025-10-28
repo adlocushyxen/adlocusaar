@@ -8,6 +8,7 @@ import android.text.TextUtils;
 
 import com.fasterxml.jackson.core.JsonParseException;
 import com.hyxen.adlocusaar.R;
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.constants.ApiStatus;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.data.RemoteResponse;
@@ -52,21 +53,26 @@ import retrofit2.HttpException;
 public class Repository {
     private static final String TAG = Repository.class.getSimpleName();
     //User Base Info
-    private static final String KEY_FIREBASE_TOKEN = "firebase_token";
-    private static final String KEY_HASH_DEVICE_ID = "hash_device_id";
-    private static final String KEY_SDK_VERSION = "sdk_version";
-    private static final String KEY_APP_KEY = "app_key";//Hyxen app key
-    private static final String KEY_DEVICE_MAC = "device_mac";
-    private static final String KEY_DEVICE_MODEL = "device_model";
-    private static final String KEY_FCM_APP_KEY = "fcm_app_key";
-    private static final String KEY_APP_PACKAGE_NAME = "app_package_name";
-    private static final String KEY_REGISTER_STATE = "register_state";
-    private static final String KEY_LBS_TASK_JSON = "lbs_task_json";
-    private static final String KEY_ANDROID_ID_USER_STATE = "android_id_user_state";
-    private static final String KEY_GOOGLE_AD_ID = "google_ad_id";
+    public static final String KEY_FIREBASE_TOKEN = "firebase_token";
+    public static final String KEY_HASH_DEVICE_ID = "hash_device_id";
+    public static final String KEY_SDK_VERSION = "sdk_version";
+    public static final String KEY_APP_KEY = "app_key";//Hyxen app key
+    public static final String KEY_DEVICE_MAC = "device_mac";
+    public static final String KEY_DEVICE_MODEL = "device_model";
+    public static final String KEY_FCM_APP_KEY = "fcm_app_key";
+    public static final String KEY_APP_PACKAGE_NAME = "app_package_name";
+    public static final String KEY_GOOGLE_AD_ID = "google_ad_id";
+    public static final String KEY_GOOGLE_AND_AD_ID = "google_and_ad_id";
+    public static final String KEY_GOOGLE_ENCODE_AD_ID = "google_encode_ad_id";
+
+    public static final String KEY_REGISTER_STATE = "register_state";
+    public static final String KEY_LBS_TASK_JSON = "lbs_task_json";
+    public static final String KEY_ANDROID_ID_USER_STATE = "android_id_user_state";
+    public static final String KEY_APP_NAME = "app_name";
+
 
     //FCM Message
-    private static final String KEY_FCM_MESSAGE = "fcm_message";
+    public static final String KEY_FCM_MESSAGE = "fcm_message";
 
     /// RD Site
     private static final String APP_KEY = "4116f0ac07a19b7db4b0ed7839b70618812850f1";
@@ -75,6 +81,7 @@ public class Repository {
     private static SingleTransformer sRemoteErrorHandler = new RemoteErrorHandler();
 
     public static void init(Context context) {
+        UserBaseData.init(context);
         mContextRef = new WeakReference<>(context);
         RemoteAPI.init(context);
     }
@@ -85,7 +92,7 @@ public class Repository {
     /**
      * Post Push Token
      */
-    public static Single<RemoteResponse> postPushToken() {
+    public static Single<RemoteResponse> postPushToken(final Context context) {
         Logger.i(TAG, "[Method] -> postPushToken()");
         boolean error = false;
         PushTokenRequest request = getUserBaseData();
@@ -106,10 +113,14 @@ public class Repository {
                 Logger.e(TAG, "[postPushToken] request.getAppKey() is null");
                 error = true;
             }
-            if (TextUtils.isEmpty(request.getFcmAppKey())) {
+            if (request.getFcmAppKey()==null) {
                 Logger.e(TAG, "[postPushToken] request.getFcmAppKey() is null");
                 error = true;
             }
+//            if (TextUtils.isEmpty(request.getFcmAppKey())) {
+//                Logger.e(TAG, "[postPushToken] request.getFcmAppKey() is null");
+//                error = true;
+//            }
             // Optional param
             if (TextUtils.isEmpty(request.getSdkVersion())) {
                 Logger.e(TAG, "[postPushToken] request.getSdkVersion() is null");
@@ -128,7 +139,7 @@ public class Repository {
             return illegalContext();
         }
 
-        return AdLocusAPI.getInstance()
+        return AdLocusAPI.getInstance(context)
                 .postPushToken(request)
                 .compose(Repository.<RemoteResponse>applyErrorHandling());
     }
@@ -213,6 +224,8 @@ public class Repository {
         return AdLocusAPI.getInstance()
                 .postCollection(request)
                 .compose(Repository.<GetCollectionResponse>applyErrorHandling());
+
+
 //                .filter(new Predicate<GetNewAndResponse>() {
 //                    @Override
 //                    public boolean test(GetNewAndResponse getNewAndResponse) throws Exception {
@@ -283,51 +296,73 @@ public class Repository {
             return Single.error(new Throwable("[setUserBaseData] context is null"));
         }
         context = mContextRef.get();
-        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-
-        return getGoogleADID(context).flatMap(new Function<String, SingleSource<Boolean>>() {
+        return Single.create(new SingleOnSubscribe<Boolean>() {
             @Override
-            public SingleSource<Boolean> apply(String s) throws Exception {
-
-                int userStatement = getUserAndroidIdState();
-                        /*
-                        因為Device ID不會變，所以不需要一直重複儲存，所以只需要檢查在暫存裡面的Device Id是否為空，若為空則存進去。
-
-                        若使用者願意讓app使用android id，則讓 KEY_HASH_DEVICE_ID 欄位與 KEY_DEVICE_ID 欄位都放原本的data
-                        若不允許則使用Google Ad id
-                        */
-                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_HASH_DEVICE_ID)) {
-                    pref.edit().putString(KEY_HASH_DEVICE_ID, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ? AdLocusUtil.getEncodeDeviceId(context) : s).apply();
-                }
-                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_GOOGLE_AD_ID)) {
-                    pref.edit().putString(KEY_GOOGLE_AD_ID, AdLocusUtil.getAndGoogleADID(context)).apply();
-                }
-                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MAC))
-                    pref.edit().putString(KEY_DEVICE_MAC, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ?AdLocusUtil.getMac(context):"no_access").apply();
-                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MODEL))
-                    pref.edit().putString(KEY_DEVICE_MODEL, Build.MODEL).apply();
-                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_APP_PACKAGE_NAME) && !TextUtils.isEmpty(pushTokenData.getAppPackageName()))
-                    pref.edit().putString(KEY_APP_PACKAGE_NAME, pushTokenData.getAppPackageName()).apply();
-
-                //有可能改變的資料重新儲存
-                if (!MiscUtils.checkSharedStringEqual(context, KEY_SDK_VERSION, AdLocusUtil.MAC_SDK_VERSION))
-                    pref.edit().putString(KEY_SDK_VERSION, AdLocusUtil.MAC_SDK_VERSION).apply();
-                if (!TextUtils.isEmpty(pushTokenData.getAppKey()))
-                    pref.edit().putString(KEY_APP_KEY, pushTokenData.getAppKey()).apply();
-                if (!TextUtils.isEmpty(pushTokenData.getFcmAppKey()))
-                    pref.edit().putString(KEY_FCM_APP_KEY, pushTokenData.getFcmAppKey()).apply();
-
-                //比對 SharedPreference 裡的FCM Token若相同則不再次存入
+            public void subscribe(SingleEmitter<Boolean> e) throws Exception {
+                UserBaseData.setHashDeviceId(context);
+                UserBaseData.setGoogleAdId(context);
+                UserBaseData.setGoogleAndAdId(context);
+                UserBaseData.setGoogleEncodeAdId(context);
+                UserBaseData.setMac(context);
+                UserBaseData.setDeviceModel(context);
+                UserBaseData.setAppPackageName(context,pushTokenData);
+                UserBaseData.setSdkVersion(context);
+                UserBaseData.setAppKey(context,pushTokenData);
+                UserBaseData.setFcmAppKey(context,pushTokenData);
                 String pushToken = pushTokenData.getPushToken();
                 if (!TextUtils.isEmpty(pushToken)) {
-                    if (!MiscUtils.checkSharedStringEqual(context, KEY_FIREBASE_TOKEN, pushToken))
-                        pref.edit().putString(KEY_FIREBASE_TOKEN, pushToken).apply();
-                } else
-                    return Single.error(new ApiException(ApiStatus.ERROR_DATA_ERROR, "Push token is null"));
+                    UserBaseData.setFcmToken(context,pushTokenData);
+                } else e.onError(new ApiException(ApiStatus.ERROR_DATA_ERROR, "Push token is null"));
 
-                return Single.just(true);
+                e.onSuccess(true);
             }
-        });
+        }).subscribeOn(Schedulers.newThread());
+
+//        final SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return getGoogleADID(context).flatMap(new Function<String, SingleSource<Boolean>>() {
+//            @Override
+//            public SingleSource<Boolean> apply(String s) throws Exception {
+//
+//                int userStatement = getUserAndroidIdState();
+//                        /*
+//                        因為Device ID不會變，所以不需要一直重複儲存，所以只需要檢查在暫存裡面的Device Id是否為空，若為空則存進去。
+//
+//                        若使用者願意讓app使用android id，則讓 KEY_HASH_DEVICE_ID 欄位與 KEY_DEVICE_ID 欄位都放原本的data
+//                        若不允許則使用Google Ad id
+//                        */
+//                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_HASH_DEVICE_ID)) {
+//                    pref.edit().putString(KEY_HASH_DEVICE_ID, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ? AdLocusUtil.getEncodeDeviceId(context) : s).apply();
+//                }
+//                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_GOOGLE_AD_ID)) {
+//                    //pref.edit().putString(KEY_GOOGLE_AD_ID, AdLocusUtil.getAndGoogleADID(context)).apply();
+//                    pref.edit().putString(KEY_GOOGLE_AD_ID, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ?AdLocusUtil.getAndGoogleADID(context):"").apply();
+//                }
+//                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MAC))
+//                    pref.edit().putString(KEY_DEVICE_MAC, userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT ?AdLocusUtil.getMac(context):"no_access").apply();
+//                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_DEVICE_MODEL))
+//                    pref.edit().putString(KEY_DEVICE_MODEL, Build.MODEL).apply();
+//                if (MiscUtils.checkSharedStringIsEmpty(context, KEY_APP_PACKAGE_NAME) && !TextUtils.isEmpty(pushTokenData.getAppPackageName()))
+//                    pref.edit().putString(KEY_APP_PACKAGE_NAME, pushTokenData.getAppPackageName()).apply();
+//
+//                //有可能改變的資料重新儲存
+//                if (!MiscUtils.checkSharedStringEqual(context, KEY_SDK_VERSION, AdLocusUtil.MAC_SDK_VERSION))
+//                    pref.edit().putString(KEY_SDK_VERSION, AdLocusUtil.MAC_SDK_VERSION).apply();
+//                if (!TextUtils.isEmpty(pushTokenData.getAppKey()))
+//                    pref.edit().putString(KEY_APP_KEY, pushTokenData.getAppKey()).apply();
+//                if (!TextUtils.isEmpty(pushTokenData.getFcmAppKey()))
+//                    pref.edit().putString(KEY_FCM_APP_KEY, pushTokenData.getFcmAppKey()).apply();
+//
+//                //比對 SharedPreference 裡的FCM Token若相同則不再次存入
+//                String pushToken = pushTokenData.getPushToken();
+//                if (!TextUtils.isEmpty(pushToken)) {
+//                    if (!MiscUtils.checkSharedStringEqual(context, KEY_FIREBASE_TOKEN, pushToken))
+//                        pref.edit().putString(KEY_FIREBASE_TOKEN, pushToken).apply();
+//                } else
+//                    return Single.error(new ApiException(ApiStatus.ERROR_DATA_ERROR, "Push token is null"));
+//
+//                return Single.just(true);
+//            }
+//        });
     }
 
     /**
@@ -342,13 +377,15 @@ public class Repository {
             Logger.e(TAG, "[setPushToken] pushToken is empty");
             return false;
         }
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        pref.edit().putString(KEY_FIREBASE_TOKEN, pushToken).apply();
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        pref.edit().putString(KEY_FIREBASE_TOKEN, pushToken).apply();
+        UserBaseData.setFcmToken(context,pushToken);
         return true;
     }
     public static String getPushToken(Context context, String defult) {
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(KEY_FIREBASE_TOKEN, defult);
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getString(KEY_FIREBASE_TOKEN, defult);
+        return UserBaseData.getFcmToken(context);
     }
 
     /**
@@ -366,19 +403,33 @@ public class Repository {
         context = mContextRef.get();
         PhoneCellUtil cgi = new PhoneCellUtil(context);
 
+//        PushTokenRequest result = new PushTokenRequest();
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        result.setPushToken(pref.getString(KEY_FIREBASE_TOKEN, ""));
+//        result.setDeviceId(getHashDeviceId());
+//        result.setSdkVersion(pref.getString(KEY_SDK_VERSION, ""));
+//        result.setAppKey(getAppKey());
+//        result.setDeviceMac(pref.getString(KEY_DEVICE_MAC, ""));
+//        result.setDeviceModel(pref.getString(KEY_DEVICE_MODEL, ""));
+//        result.setFcmAppKey(pref.getString(KEY_FCM_APP_KEY, ""));
+//        result.setAppPackageName(pref.getString(KEY_APP_PACKAGE_NAME, ""));
+//        result.setMcc(cgi.getMcc());
+//        result.setMnc(cgi.getMnc());
+//        result.setD_ad_id(AdLocusUtil.getEncodedGoogleADId(context));
+
         PushTokenRequest result = new PushTokenRequest();
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        result.setPushToken(pref.getString(KEY_FIREBASE_TOKEN, ""));
+        result.setPushToken(UserBaseData.getFcmToken(context));
         result.setDeviceId(getHashDeviceId());
-        result.setSdkVersion(pref.getString(KEY_SDK_VERSION, ""));
+        result.setSdkVersion(UserBaseData.getSdkVersion(context));
         result.setAppKey(getAppKey());
-        result.setDeviceMac(pref.getString(KEY_DEVICE_MAC, ""));
-        result.setDeviceModel(pref.getString(KEY_DEVICE_MODEL, ""));
-        result.setFcmAppKey(pref.getString(KEY_FCM_APP_KEY, ""));
-        result.setAppPackageName(pref.getString(KEY_APP_PACKAGE_NAME, ""));
+        result.setDeviceMac(UserBaseData.getMac(context));
+        result.setDeviceModel(UserBaseData.getDeviceModel(context));
+        result.setFcmAppKey(UserBaseData.getFcmAppKey(context));
+        result.setAppPackageName(UserBaseData.getAppPackageName(context));
         result.setMcc(cgi.getMcc());
         result.setMnc(cgi.getMnc());
-        result.setD_ad_id(AdLocusUtil.getEncodedGoogleADId(context));
+//        result.setD_ad_id(AdLocusUtil.getEncodedGoogleADId(context));
+        result.setD_ad_id(UserBaseData.getGoogleEncodeAdId(context));
         return result;
     }
 
@@ -395,9 +446,15 @@ public class Repository {
             return "";
         }
         context = mContextRef.get();
+        String ret=UserBaseData.getAppKey(context);
+        if(ret.equals("")){
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            ret=pref.getString(KEY_APP_KEY, "");
+        }
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(KEY_APP_KEY, "");
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getString(KEY_APP_KEY, "");
+        return ret;
     }
 
     /**
@@ -413,9 +470,15 @@ public class Repository {
             return "";
         }
         context = mContextRef.get();
+        String ret=UserBaseData.getGoogleAndAdId(context);
+        if(ret.equals("")){
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            ret=pref.getString(KEY_GOOGLE_AD_ID, "");
+        }
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(KEY_GOOGLE_AD_ID, "");
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getString(KEY_GOOGLE_AD_ID, "");
+        return ret;
     }
 
     /**
@@ -434,8 +497,15 @@ public class Repository {
         }
         context = mContextRef.get();
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(KEY_HASH_DEVICE_ID, "");
+        String ret=UserBaseData.getHashDeviceId(context);
+        if(ret.equals("")){
+            SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+            ret=pref.getString(KEY_HASH_DEVICE_ID, "");
+        }
+
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getString(KEY_HASH_DEVICE_ID, "");
+        return ret;
     }
 
     /**
@@ -527,8 +597,9 @@ public class Repository {
         }
         context = mContextRef.get();
 
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        return pref.getString(KEY_APP_PACKAGE_NAME, "");
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        return pref.getString(KEY_APP_PACKAGE_NAME, "");
+        return UserBaseData.getAppPackageName(context);
     }
 
     /**
@@ -598,21 +669,21 @@ public class Repository {
 
     // TODO: 2018/4/30 Check是否需要暫存FCM Message
     public static void setFCMMessage(String fcmMessage) {
-        Logger.i(TAG, "[Method] -> sendFCMMessage()");
-
-        final Context context;
-        if (mContextRef == null || mContextRef.get() == null) {
-            Logger.e(TAG, "[sendFCMMessage] context is null");
-            return;
-        }
-        context = mContextRef.get();
-
-        if (TextUtils.isEmpty(fcmMessage)) {
-            Logger.e(TAG, "[sendFCMMessage] fcmMessage is null");
-            return;
-        }
-        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-        pref.edit().putString(KEY_FCM_MESSAGE, fcmMessage).apply();
+//        Logger.i(TAG, "[Method] -> sendFCMMessage()");
+//
+//        final Context context;
+//        if (mContextRef == null || mContextRef.get() == null) {
+//            Logger.e(TAG, "[sendFCMMessage] context is null");
+//            return;
+//        }
+//        context = mContextRef.get();
+//
+//        if (TextUtils.isEmpty(fcmMessage)) {
+//            Logger.e(TAG, "[sendFCMMessage] fcmMessage is null");
+//            return;
+//        }
+//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+//        pref.edit().putString(KEY_FCM_MESSAGE, fcmMessage).apply();
     }
 
     /*--------------------------------------------------------------------------------------------*/
@@ -731,9 +802,10 @@ public class Repository {
                                 result = (ApiException) throwable;
                             } else if (throwable instanceof HttpException) {
                                 Logger.e(TAG, "HttpException!");
-//                                HttpException error = (HttpException) throwable;
-//                                error.code();
-//                                String s=error.response().errorBody().string();
+                                HttpException error = (HttpException) throwable;
+                                error.code();
+                                String s=error.response().errorBody().string();
+                                Logger.e(TAG, "HttpException! "+error.code()+":"+s);
 
                                 result = new ApiException(ApiStatus.NO_NETWORK, context.getString(R.string.common_error_server));
                             } else if (throwable instanceof SocketTimeoutException) {

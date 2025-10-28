@@ -40,69 +40,64 @@ public class PushAlarm {
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
         pref.edit().putLong(KEY_SAVE_FCM_RECEVER_TIME, l).apply();
     }
-    public static void startPushAlarmFromReboot(Context context){
+    public static boolean startPushAlarmFromReboot(Context context){
         if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarmFromReboot] start");
 //        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 //        long time= pref.getLong(KEY_ALARM_START_TIME, -1);
-        startPushAlarm( context);
+        return startPushAlarm( context);
     }
-    public static void startPushAlarmFromInit(Context context){
+    public static boolean startPushAlarmFromInit(Context context){
         if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarmFromInit] start");
 //        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
 //        long time= pref.getLong(KEY_ALARM_START_TIME, -1);
 //        if(time>=0)startPushAlarm( context);
-        startPushAlarm( context);
+        return startPushAlarm( context);
     }
-    public static void startPushAlarm(Context context){
-//        if(context==null) return;
-//        AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-//        Intent intent = new Intent(context, PushAlarmReceiver.class);
-//        intent.setAction(PushAlarmReceiver.FLAG_ACTION);
-//
-//        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
-//        long firstTime= pref.getLong(KEY_ALARM_START_TIME, -1);
-//        if(firstTime>=0){
+    public static boolean startPushAlarm(Context context){
+        if(context==null) return false;
+        AlarmManager alarm = (AlarmManager) context.getSystemService(ALARM_SERVICE);
+        Intent intent = new Intent(context, PushAlarmReceiver.class);
+        intent.setAction(PushAlarmReceiver.FLAG_ACTION);
+
+        SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);
+        long firstTime= pref.getLong(KEY_ALARM_START_TIME, -1);
+        if(firstTime>=0){
 //            PendingIntent stop  = PendingIntent.getBroadcast(context, PendingIntentID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//            alarm.cancel(stop);
-//            if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] cancel:"+PendingIntentID);
-//        }else{
-//            firstTime = (long)(Math.random()* time_interval/1000*1000);
-//            pref.edit().putLong(KEY_ALARM_START_TIME, firstTime).apply();
-//            if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] new:"+firstTime);
-//        }
-//
-//        long nowtime=System.currentTimeMillis();
-//        long base_time=nowtime%time_interval/1000*1000;
-//        if(firstTime>base_time){
-//            firstTime=firstTime-base_time+nowtime;
-//        }else {
-//            firstTime=firstTime-base_time+nowtime+time_interval;
-//        }
-//        long last_time= pref.getLong(KEY_ALARM_RUN_TIME, -1);
-//        if(firstTime<=last_time)firstTime=firstTime+time_interval;
-//
-//        if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] firstTime normal:"+firstTime+","+sdf.format(new Date(firstTime)));
-//        if(AdLocus.isAlarmDebug())firstTime =180000+System.currentTimeMillis();
-//        if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] firstTime debug:"+firstTime+","+sdf.format(new Date(firstTime)));
-//        if(AdLocus.isAlarmBotDebug()){
-//            TreeMap<String,String> map=new TreeMap<>();
-//            map.put("data", Repository.getHashDeviceId());
-//            map.put("time", sdf.format(new Date()));
-//            map.put("info", "init");
-//            map.put("next", sdf.format(new Date(firstTime)));
-//            PushBotDebug.push(map);
-//        }
-//
-//        pref.edit().putLong(KEY_ALARM_RUN_TIME, firstTime).apply();
-//
-//        PendingIntent sender  = PendingIntent.getBroadcast(context, PendingIntentID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, firstTime, sender);
-//        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-//            alarm.setExact(AlarmManager.RTC_WAKEUP, firstTime, sender);
-//        } else {
-//            alarm.set(AlarmManager.RTC_WAKEUP, firstTime, sender);
-//        }
+            PendingIntent stop  = PendingIntent.getBroadcast(context, PendingIntentID, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarm.cancel(stop);
+            if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] cancel:"+PendingIntentID);
+        }else{
+            firstTime = (long)(Math.random()* time_interval/1000*1000);
+            pref.edit().putLong(KEY_ALARM_START_TIME, firstTime).apply();
+            if(AdLocus.isAlarmDebug())Logger.d(TAG, "[startPushAlarm] new:"+firstTime);
+        }
+
+        long nowtime=System.currentTimeMillis();
+        long base_time=nowtime%time_interval/1000*1000;
+        if(firstTime>base_time){
+            firstTime=firstTime-base_time+nowtime;
+        }else {
+            firstTime=firstTime-base_time+nowtime+time_interval;
+        }
+        long last_time= pref.getLong(KEY_ALARM_RUN_TIME, -1);
+        if(firstTime<=last_time)firstTime=firstTime+time_interval;
+
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            if(!alarm.canScheduleExactAlarms()){
+                return false;
+            }
+        }
+        PendingIntent sender  = PendingIntent.getBroadcast(context, PendingIntentID, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            alarm.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, firstTime, sender);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            alarm.setExact(AlarmManager.RTC_WAKEUP, firstTime, sender);
+        } else {
+            alarm.set(AlarmManager.RTC_WAKEUP, firstTime, sender);
+        }
+        return true;
     }
     public static boolean isReceverFCM(Context context){
         SharedPreferences pref = PreferenceManager.getDefaultSharedPreferences(context);

@@ -3,9 +3,11 @@ package com.hyxen.adlocusaar.view;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+//import android.support.annotation.Nullable;
+//import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
 
 public class BaseActivity extends Activity implements BaseContract.View {
     private static final String TAG = BaseActivity.class.getSimpleName();

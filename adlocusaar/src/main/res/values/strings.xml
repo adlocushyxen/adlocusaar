@@ -21,5 +21,23 @@
     <string name="ad_locus_activity_loading">讀取中...</string>
 
     <!-- Statement -->
-    <string name="statement_message">為了更佳的使用者體驗，我們將使用您的Android ID及網路卡識別碼作為識別使用，請問您是否同意?</string>
+    <string name="statement_message_old">為了更佳的使用者體驗，我們將使用您的Android ID及網路卡識別碼作為識別使用，請問您是否同意?</string>
+    <string name="statement_message_old_2">為了更佳的使用者體驗，我們可能會不定時取得您的裝置資訊（如應用程式版本、作業系統版本、語言與國家設定、裝置型號、Android ID、已安裝的應用程式列表及網路卡識別碼）。此資訊將用於提昇本服務品質，並避免非法或不當使用。請問您是否同意?</string>
+
+    <string name="statement_title">AdLocus個人資料揭露事項暨同意聲明</string>
+
+
+    <string name="statement_message_old_3">為了更佳的使用者體驗及精準的廣告需求放送，在經過您的同意之後我們會不定時取得您的裝置及個人資訊（如應用程式版本、作業系統版本、語言與國家設定、裝置型號、廣告識別ID、Android ID、已安裝的應用程式列表及網路卡識別碼）。\n此資訊將用於提昇本服務品質，過濾內容並篩選出你可能有興趣的廣告。\n\n您有權利拒絕提供個人資訊，本服務將無法篩選並且將以隨機方式發送廣告。\n如若同意，我們承諾會妥善保管您的個人資訊並避免非法或不當使用。\n
+有關於AdLocus的詳細隱私權頁面網址如下:\n
+https://adlocus.com/privacy/ \n
+請問您是否同意?</string>
+    <string name="statement_message">為了更佳的使用者體驗及精準的廣告需求放送，在經過您的同意之後我們會不定時取得您的裝置及個人資訊（如應用程式版本、位置信息、作業系統版本、語言與國家設定、裝置型號、廣告識別ID、Android ID、已安裝的應用程式列表及網路卡識別碼），並以安全的方式加密儲存及傳輸(HTTPS)。\n此資訊將用於提昇本服務品質，過濾內容並篩選出你可能有興趣的廣告。\n\n您有權利拒絕提供個人資訊，本服務將無法篩選並且將以隨機方式發送廣告。\n如若同意，我們承諾會妥善保管您的個人資訊。僅與我們相關企業和代表我們處理個人資料的獲授權第三方分享，或是在司法單位或其他有權機關要求下進行分享。並避免非法或不當使用。並避免非法或不當使用。\n
+有關於AdLocus的詳細隱私權頁面網址如下:\n
+https://adlocus.com/privacy/ \n
+請問您是否同意?</string>
+
+
+
+
+
 </resources>

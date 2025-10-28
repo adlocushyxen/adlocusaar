@@ -1,11 +1,17 @@
 package com.hyxen.adlocusaar.repository.remote;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.webkit.WebSettings;
 
-import com.github.aurae.retrofit2.LoganSquareConverterFactory;
+import androidx.core.app.ActivityCompat;
+
+import com.bluelinelabs.logansquare.*;
 import com.hyxen.adlocusaar.AdLocus;
 
+import com.hyxen.adlocusaar.LoganSquareConverterFactory;
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.repository.data.RemoteResponse;
 import com.hyxen.adlocusaar.repository.data.request.CollectionRequest;
@@ -48,10 +54,11 @@ public class AdLocusAPI extends RemoteAPI {
 //                "http://test.adlocus_api.dev.hxcld.com/" :
 //                "todo";
 
-        String url = AdLocus.isDebug() ?
-                "https://test.adlocus_api.dev.hxcld.com/" :
-                "https://a.api.ad-locus.com/";
-//        String url = "https://a.api.ad-locus.com/";
+//        String url = AdLocus.isDebug() ?
+//                "https://test.adlocus_api.dev.hxcld.com/" :
+//                "https://a.api.ad-locus.com/";
+
+        String url = "https://a.api.ad-locus.com/";
         OkHttpClient client = getOkHttpClient();
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -114,10 +121,18 @@ public class AdLocusAPI extends RemoteAPI {
     }
     public Single<GetNewAndResponse> postNewAnd(NewAndRequest request) {
         Logger.i(TAG, "[Method] -> postNewAnd()");
-        String outPut = MiscUtils.toJSONString(request);
-        Logger.d(TAG, "[postNewAnd] request = ", outPut);
         if(request.getLat()==null)request.setLat("");
         if(request.getLon()==null)request.setLon("");
+        String is_POST_NOTIFICATIONS="1";
+        if(android.os.Build.VERSION.SDK_INT>= 33 && sContextRef.get()!=null){
+            if(ActivityCompat.checkSelfPermission(sContextRef.get(), "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED){
+                is_POST_NOTIFICATIONS="0";
+            }
+        }
+        request.setPost_notifications(is_POST_NOTIFICATIONS);
+
+        String outPut = MiscUtils.toJSONString(request);
+        Logger.d(TAG, "[postNewAnd] request = ", outPut);
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart(Constants.TAG_AD_ID, request.getAdId())
@@ -138,17 +153,32 @@ public class AdLocusAPI extends RemoteAPI {
                 .addFormDataPart(Constants.TAG_RSSI, request.getRssi())
                 .addFormDataPart(Constants.TAG_CELL_TYPE, request.getCellType())
                 .addFormDataPart(Constants.TAG_LOC_TYPE, request.getLocType())
-
+                .addFormDataPart(Constants.TAG_POST_NOTIFICATIONS, request.getPost_notifications())
                 .build();
         return mService.postNewAnd(requestBody);
     }
 
     public Single<GetNewImpressionResponse> postNewImpression(NewAndRequest request, String lat, String lon) {
         Logger.i(TAG, "[Method] -> postNewImpression()");
-        String outPut = MiscUtils.toJSONString(request);
-        Logger.d(TAG, "[postNewImpression] request = ", outPut);
+
         if(lat==null)lat="";
         if(lon==null)lon="";
+        String is_POST_NOTIFICATIONS="1";
+        if(android.os.Build.VERSION.SDK_INT>= 33 && sContextRef.get()!=null){
+            if(ActivityCompat.checkSelfPermission(sContextRef.get(), "android.permission.POST_NOTIFICATIONS") != PackageManager.PERMISSION_GRANTED){
+                is_POST_NOTIFICATIONS="0";
+            }
+        }
+        request.setPost_notifications(is_POST_NOTIFICATIONS);
+        String outPut = MiscUtils.toJSONString(request);
+        Logger.d(TAG, "[postNewImpression] request = ", outPut);
+
+
+
+
+
+
+
         RequestBody requestBody = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
 //                .addFormDataPart(Constants.TAG_DEVICE_ID, request.getDeviceId())
@@ -169,11 +199,12 @@ public class AdLocusAPI extends RemoteAPI {
                 .addFormDataPart(Constants.TAG_SESSION_ID, request.getSessionId())
                 .addFormDataPart(Constants.TAG_TEST_MODE, request.getTestmode())
                 .addFormDataPart(Constants.TAG_V_STR, request.getvStr())
-                .addFormDataPart(Constants.TAG_LAT, lat)
-                .addFormDataPart(Constants.TAG_LON, lon)
                 .addFormDataPart(Constants.TAG_CELL_TYPE, request.getCellType())
                 .addFormDataPart(Constants.TAG_LOC_TYPE, request.getLocType())
                 .addFormDataPart(Constants.TAG_RSSI, request.getRssi())
+                .addFormDataPart(Constants.TAG_LAT, lat)
+                .addFormDataPart(Constants.TAG_LON, lon)
+                .addFormDataPart(Constants.TAG_POST_NOTIFICATIONS, request.getPost_notifications())
                 .build();
 
 //        Logger.d(TAG, "[postNewImpression] requestBody = ", MiscUtils.getRequestBodyToString(requestBody));

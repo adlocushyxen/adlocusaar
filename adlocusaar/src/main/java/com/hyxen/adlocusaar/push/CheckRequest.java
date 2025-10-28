@@ -4,6 +4,7 @@ package com.hyxen.adlocusaar.push;
 import android.content.Context;
 
 import com.hyxen.adlocusaar.AdLocusTargeting;
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.net.HxRequest;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 
@@ -36,7 +37,8 @@ class CheckRequest extends HxRequest
 	private void init(Context context, String key, AdLocusTargeting adLocusTargeting)
 	{
 		setMethod(Method.GET);
-		setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+//		setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+		setPostParameter("device_id", UserBaseData.getHashDeviceId(context));
 		setPostParameter("key", key);
 
 		AdLocusUtil.setToRequest(this, adLocusTargeting);

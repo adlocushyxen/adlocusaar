@@ -4,9 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.hyxen.adlocusaar.constants.Constants;
+import com.hyxen.adlocusaar.engine.CellInfo;
 import com.hyxen.adlocusaar.engine.HxCellEngine;
 import com.hyxen.adlocusaar.engine.HxWifiEngine;
 import com.hyxen.adlocusaar.net.HxRequest;
+import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.util.AdLocusUtil;
 
 import java.net.HttpURLConnection;
@@ -46,8 +49,13 @@ public class InterstitialVideoReq
 		mAdLocusTargeting = adLocusTargeting;
 
 //		AdLocusUtil.init(mActivity);
-		HxCellEngine.getInstance(mActivity);
-		HxWifiEngine.getInstance(mActivity);
+		CellInfo ci=null;
+		int userStatement = Repository.getUserAndroidIdState();
+		if(userStatement == Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT){
+			HxCellEngine.getInstance(mActivity);
+			HxWifiEngine.getInstance(mActivity);
+		}
+
 	}
 
 	public void show()

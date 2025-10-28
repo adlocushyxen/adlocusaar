@@ -7,8 +7,10 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.support.v4.app.ActivityCompat;
+//import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+
+import androidx.core.app.ActivityCompat;
 
 import com.hyxen.adlocusaar.AdLocus;
 import com.hyxen.adlocusaar.constants.Constants;
@@ -67,22 +69,29 @@ public class CheckLbsReceiver extends BroadcastReceiver {
                                             public void accept(GetLbsTaskResponse getLbsTaskResponse) throws Exception {
                                                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                                                     Logger.i(TAG, "GSP permission is not granted");
-                                                    if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
-                                                        try{
-                                                            LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
-                                                            MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
-                                                        }catch(Exception e){e.printStackTrace();}
-                                                    }
+//                                                    if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
+//                                                        try{
+//                                                            LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
+//                                                            MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
+//                                                        }catch(Exception e){e.printStackTrace();}
+//                                                    }
                                                     return;
                                                 }//
-                                                if ( ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+
+                                                boolean isBackAccess=false;
+                                                if(android.os.Build.VERSION.SDK_INT<29 || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED){
+                                                    isBackAccess=true;
+                                                }
+
+                                                if ( !isBackAccess) {
                                                     Logger.i(TAG, "GPS permission is not granted");
-                                                    if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
-                                                        try{
-                                                            LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
-                                                            MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
-                                                        }catch(Exception e){e.printStackTrace();}
-                                                    }
+//                                                    if (getLbsTaskResponse == null || getLbsTaskResponse.getPt() == null) {
+//                                                        try{
+//                                                            LbsTaskLlr lr=getLbsTaskResponse.getPt().get(0).getLlr().get(0);
+//                                                            MyLocationListener.getInstance(getLbsTaskResponse, context).onLocationChanged(Double.parseDouble(lr.getLat()),Double.parseDouble(lr.getLon()));
+//                                                        }catch(Exception e){e.printStackTrace();}
+//                                                    }
                                                     return;
                                                 }
 

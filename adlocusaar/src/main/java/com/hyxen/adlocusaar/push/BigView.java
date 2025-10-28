@@ -9,11 +9,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
+//import android.support.v4.app.NotificationCompat;
 import android.widget.RemoteViews;
+
+import androidx.core.app.NotificationCompat;
 
 import com.hyxen.adlocusaar.AdActivity;
 //import com.hyxen.adlocusaar.adlocuslib.R;
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.net.HxRequest;
 import com.hyxen.adlocusaar.obj.AdLocusAd;
 import com.hyxen.adlocusaar.util.AdLocusNotification;
@@ -67,7 +70,8 @@ public class BigView
 		r.setMethod(HxRequest.Method.GET);
 		r.setPostParameter("ad_id", ad.id);
 		r.setPostParameter("appkey", ServiceUtil.getValidKey(context));
-		r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+//		r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+		r.setPostParameter("device_id", UserBaseData.getHashDeviceId(context));
 		r.setPostParameter("timestamp", "" + System.currentTimeMillis());
 		r.setPostParameter("action", "click");
 		r.setPostParameter("type", feedback.type());
@@ -119,7 +123,8 @@ public class BigView
 				break;
 		}
 
-		return PendingIntent.getActivity(context, ad_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//		return PendingIntent.getActivity(context, ad_id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+		return PendingIntent.getActivity(context, ad_id, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
 	}
 
 

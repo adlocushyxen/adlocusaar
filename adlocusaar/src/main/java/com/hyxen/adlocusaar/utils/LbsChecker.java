@@ -43,8 +43,11 @@ public class LbsChecker {
             mIntent = new Intent(context, CheckLbsReceiver.class);
             mIntent.putExtra(Constants.TAG_BROADCAST_LBS_CHECKER_KEY, Constants.TAG_BROADCAST_LBS_CHECKER_VALUE);
         }
-        if (mPendingIntent == null)
-            mPendingIntent = PendingIntent.getBroadcast(context, 1, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        if (mPendingIntent == null){
+//            mPendingIntent = PendingIntent.getBroadcast(context, 1, mIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+            mPendingIntent = PendingIntent.getBroadcast(context, 1, mIntent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+        }
+
         if (mCalendar == null)
             mCalendar = Calendar.getInstance();
         if (mAlarmManager == null)
@@ -57,6 +60,7 @@ public class LbsChecker {
     public void startAlarmTimer() {
         Logger.d(TAG, "startAlarmTimer");
         mCalendar.add(Calendar.MINUTE, TAG_AMOUNT_TIME);
+//        mCalendar.add(Calendar.MINUTE, 1);
         if (mAlarmManager != null)
             mAlarmManager.set(AlarmManager.RTC_WAKEUP, mCalendar.getTimeInMillis(), mPendingIntent);
     }

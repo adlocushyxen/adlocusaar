@@ -203,8 +203,7 @@ public class InterstitialAd implements Ad
     		webSettings.setPluginState(PluginState.ON);
         }
         
-        webView.setWebChromeClient(new WebChromeClient()
-        {
+        webView.setWebChromeClient(new WebChromeClient(){
 			@Override
 			public void onProgressChanged(WebView view, final int newProgress)
 			{
@@ -218,18 +217,14 @@ public class InterstitialAd implements Ad
 				{
 					public void run()
 					{
-						synchronized (mIsLoading)
-						{
-							synchronized (mIsReadyToShow)
-							{
-								if(mIsReadyToShow.get())
-								{
+						synchronized (mIsLoading){
+							synchronized (mIsReadyToShow){
+								if(mIsReadyToShow.get()){
 									return;
 								}
 								mIsReadyToShow.set(true);
 								mIsLoading.set(false);
-								if(mListener != null)
-								{
+								if(mListener != null){
 									mListener.onReceiveAd(InterstitialAd.this);
 								}
 							}
@@ -237,7 +232,6 @@ public class InterstitialAd implements Ad
 					}
 				}, 100);
 			}
-        	
         });
         
         
@@ -246,7 +240,8 @@ public class InterstitialAd implements Ad
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url)
 			{
-				if((url.startsWith("http://") || url.startsWith("https://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
+//				if((url.startsWith("http://") || url.startsWith("https://") || url.contains(AdLocusUtil.REDIRECTS_CHECK_URL)) || url.startsWith("tel"))
+				if(url.startsWith("https://") || url.startsWith("tel"))
 				{
 					Activity activity = mActivity;
 			        // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs

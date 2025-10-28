@@ -18,24 +18,44 @@ public class Logger {
     }
 
     public static void v(String tag, String msg) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.VERBOSE) {
-            Log.v(TAG, String.format("[%s] %s", tag, msg));
+            Log.v(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line));
         }
     }
 
     public static void v(String tag, String msg, Throwable e) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.VERBOSE) {
-            Log.v(TAG, String.format("[%s] %s", tag, msg), e);
+            Log.v(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line), e);
         }
     }
 
     public static void d(String tag, String msg) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.DEBUG) {
-            Log.d(TAG, String.format("[%s] %s", tag, msg));
+            Log.d(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line));
         }
     }
 
     public static void d(String tag, Object... args) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.DEBUG) {
             StringBuilder a = new StringBuilder(100);
             if (null != args)
@@ -46,49 +66,84 @@ public class Logger {
                     a.append(args[i]);
                 }
             }
-            Log.d(TAG, String.format("[%s] %s", tag, a.toString()));
+            Log.d(TAG, String.format("[%s] %s", tag, a.toString()+"    --line:"+line));
         }
     }
 
     public static void d(String tag, String msg, Throwable e) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.DEBUG) {
-            Log.d(TAG, String.format("[%s] %s", tag, msg), e);
+            Log.d(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line), e);
         }
     }
 
     public static void i(String tag, String msg) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.INFO) {
-            Log.i(TAG, String.format("[%s] %s", tag, msg));
+            Log.i(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line));
         }
     }
 
     public static void i(String tag, String msg, Throwable e) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.INFO) {
-            Log.i(TAG, String.format("[%s] %s", tag, msg), e);
+            Log.i(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line), e);
         }
     }
 
     public static void w(String tag, String msg) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.WARN) {
-            Log.w(TAG, String.format("[%s] %s", tag, msg));
+            Log.w(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line));
         }
     }
 
     public static void w(String tag, String msg, Throwable e) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.WARN) {
-            Log.w(TAG, String.format("[%s] %s", tag, msg), e);
+            Log.w(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line), e);
         }
     }
 
     public static void e(String tag, String msg) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.ERROR) {
-            Log.e(TAG, String.format("[%s] %s", tag, msg));
+            Log.e(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line));
         }
     }
 
     public static void e(String tag, String msg, Throwable e) {
+        StackTraceElement[] stackTrace = Thread.currentThread().getStackTrace();
+        int line=-1;
+        if(stackTrace.length>3){
+            line=stackTrace[3].getLineNumber();
+        }
         if (sDebugLevel <= Log.ERROR) {
-            Log.e(TAG, String.format("[%s] %s", tag, msg), e);
+            Log.e(TAG, String.format("[%s] %s", tag, msg+"    --line:"+line), e);
         }
     }
 }

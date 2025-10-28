@@ -1,5 +1,6 @@
 package com.hyxen.adlocusaar.utils;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
@@ -14,10 +15,13 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
-import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.AlertDialog;
+//import android.support.v4.app.NotificationManagerCompat;
+//import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.webkit.WebSettings;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.hyxen.adlocusaar.AdLocus;
@@ -54,41 +58,43 @@ public class AdLocusUtil {
     private static final long NEXT_TRACK_TIME = (long) 86400 * 30 * 1000;
 
     public static String getMac(Context context) {
+        int userStatement = Repository.getUserAndroidIdState();
+        if(userStatement != Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT)return "no_access";
 
-        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-        if (manager == null) {
-            Logger.e(TAG, "[getMac] manager is null");
-            return null;
-        }
-        android.net.wifi.WifiInfo info = manager.getConnectionInfo();
-        String mac = info.getMacAddress();
-        if (mac != null && !mac.equals(MAC_DEFAULT)) return mac;
+//        WifiManager manager = (WifiManager) context.getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//        if (manager == null) {
+//            Logger.e(TAG, "[getMac] manager is null");
+//            return null;
+//        }
+//        android.net.wifi.WifiInfo info = manager.getConnectionInfo();
+//        String mac = info.getMacAddress();
+//        if (mac != null && !mac.equals(MAC_DEFAULT)) return mac;
         return getMac6();
     }
 
     private static String getMac6() {
-        try {
-            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
-            for (NetworkInterface nif : all) {
-                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
-
-                byte[] macBytes = nif.getHardwareAddress();
-                if (macBytes == null) {
-                    return "";
-                }
-
-                StringBuilder res1 = new StringBuilder();
-                for (byte b : macBytes) {
-                    res1.append(Integer.toHexString(b & 0xFF)).append(":");
-                }
-
-                if (res1.length() > 0) {
-                    res1.deleteCharAt(res1.length() - 1);
-                }
-                return res1.toString();
-            }
-        } catch (Exception ignored) {
-        }
+//        try {
+//            List<NetworkInterface> all = Collections.list(NetworkInterface.getNetworkInterfaces());
+//            for (NetworkInterface nif : all) {
+//                if (!nif.getName().equalsIgnoreCase("wlan0")) continue;
+//
+//                byte[] macBytes = nif.getHardwareAddress();
+//                if (macBytes == null) {
+//                    return "";
+//                }
+//
+//                StringBuilder res1 = new StringBuilder();
+//                for (byte b : macBytes) {
+//                    res1.append(Integer.toHexString(b & 0xFF)).append(":");
+//                }
+//
+//                if (res1.length() > 0) {
+//                    res1.deleteCharAt(res1.length() - 1);
+//                }
+//                return res1.toString();
+//            }
+//        } catch (Exception ignored) {
+//        }
         return MAC_DEFAULT;
     }
 
@@ -98,14 +104,15 @@ public class AdLocusUtil {
      * @return
      */
     public static String getGoogleADID(Context context) {
-        AdvertisingIdClient.Info idInfo;
+
         String androidAdId = "";
-        try {
-            idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context.getApplicationContext());
-            androidAdId = idInfo.getId();
-        } catch (Exception e) {
-            Logger.e(TAG, e.toString());
-        }
+//        AdvertisingIdClient.Info idInfo;
+//        try {
+//            idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context.getApplicationContext());
+//            androidAdId = idInfo.getId();
+//        } catch (Exception e) {
+//            Logger.e(TAG, e.toString());
+//        }
 
         return androidAdId;
     }
@@ -145,22 +152,22 @@ public class AdLocusUtil {
      * @param context
      * @return
      */
-    public static String getEncodeDeviceId(Context context) {
-        String androidId = getDeviceId(context);
-
-        String hashedId;
-        if ((androidId == null) || isEmulator()) {
-            hashedId = hashId("emulator" + System.currentTimeMillis());
-        } else {
-            hashedId = hashId(androidId);
-        }
-
-        if (hashedId == null) {
-            return null;
-        }
-
-        return hashedId;
-    }
+//    public static String getEncodeDeviceId(Context context) {
+//        String androidId = getDeviceId(context);
+//
+//        String hashedId;
+//        if ((androidId == null) || isEmulator()) {
+//            hashedId = hashId("emulator" + System.currentTimeMillis());
+//        } else {
+//            hashedId = hashId(androidId);
+//        }
+//
+//        if (hashedId == null) {
+//            return null;
+//        }
+//
+//        return hashedId;
+//    }
 
     /**
      * Get Android id
@@ -168,14 +175,14 @@ public class AdLocusUtil {
      * @param context
      * @return
      */
-    private static String getDeviceId(Context context) {
-        String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
-        if ((androidId == null) || isEmulator()) {
-            androidId = "emulator" + System.currentTimeMillis();
-        }
-
-        return androidId;
-    }
+//    private static String getDeviceId(Context context) {
+//        String androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+//        if ((androidId == null) || isEmulator()) {
+//            androidId = "emulator" + System.currentTimeMillis();
+//        }
+//
+//        return androidId;
+//    }
 
     /**
      * Method for returning an hashId hash of a string.
@@ -183,7 +190,7 @@ public class AdLocusUtil {
      * @param val the string to hash.
      * @return A hex string representing the hashId hash of the input.
      */
-    private static String hashId(String val) {
+    public static String hashId(String val) {
         return "and://" + sha1(val);
     }
 
@@ -230,7 +237,8 @@ public class AdLocusUtil {
         if (Repository.getUserAndroidIdState() == Constants.TAG_ANDROID_ID_STATEMENT_STATE_FIRST) {
             if ( context instanceof Activity) {
                 if (mStatementDialog == null) {
-                    mStatementDialog = new AlertDialog.Builder(context, R.style.MyAlertDialog)
+                        mStatementDialog = new AlertDialog.Builder(context, R.style.MyAlertDialog)
+                            .setTitle(R.string.statement_title)
                             .setMessage(R.string.statement_message)
                             .setPositiveButton(R.string.common_grant, pos)
                             .setNegativeButton(R.string.common_denied, neg)
@@ -250,39 +258,85 @@ public class AdLocusUtil {
         }
         return false;
     }
+    public static void getAndroidIDStatement(Context context) {
+        AdLocusUtil.getAndroidIDStatementDialog(context, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Repository.setUserAndroidIdState(Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Repository.setUserAndroidIdState(Constants.TAG_ANDROID_ID_STATEMENT_STATE_DENIED);
+            }
+        }, new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+//                registerApp();
+            }
+        });
+    }
+    private static void getAndroidIDStatementDialog(Context context, DialogInterface.OnClickListener pos, DialogInterface.OnClickListener neg, DialogInterface.OnDismissListener dismiss){
+        if ( context instanceof Activity) {
+//            if (mStatementDialog == null) {
+//                mStatementDialog = new AlertDialog.Builder(context, R.style.MyAlertDialog)
+//                        .setTitle(R.string.statement_title)
+//                        .setMessage(R.string.statement_message)
+//                        .setPositiveButton(R.string.common_grant, pos)
+//                        .setNegativeButton(R.string.common_denied, neg)
+//                        .setCancelable(false)
+//                        .setOnDismissListener(dismiss);
+//            }
+            final AlertDialog.Builder mStatementDialog = new AlertDialog.Builder(context, R.style.MyAlertDialog)
+                    .setTitle(R.string.statement_title)
+                    .setMessage(R.string.statement_message)
+                    .setPositiveButton(R.string.common_grant, pos)
+                    .setNegativeButton(R.string.common_denied, neg)
+                    .setCancelable(false)
+                    .setOnDismissListener(dismiss);
+            try{
+                Activity act=((Activity) context);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    if(!act.isFinishing() && !act.isDestroyed()){
+                        mStatementDialog.show();
+                    }
+                }
+            }catch(Exception e){}
+        }
+    }
     public static boolean isNotificationEnable(Context context){
         return NotificationManagerCompat.from(context).areNotificationsEnabled();
     }
-    public static String encrypt(String key, String encrypt) throws Exception
-    {
-        byte[] bKey = key.getBytes("UTF-8");
-        byte[] bEncrypt = encrypt.getBytes("UTF-8");
-        if(bEncrypt.length % 16 != 0)
-        { //not a multiple of 8
-            //create a new array with a size which is a multiple of 8
-            byte[] padded = new byte[bEncrypt.length + 16 - (bEncrypt.length % 16)];
+//    public static String encrypt(String key, String encrypt) throws Exception
+//    {
+//        byte[] bKey = key.getBytes("UTF-8");
+//        byte[] bEncrypt = encrypt.getBytes("UTF-8");
+//        if(bEncrypt.length % 16 != 0)
+//        { //not a multiple of 8
+//            //create a new array with a size which is a multiple of 8
+//            byte[] padded = new byte[bEncrypt.length + 16 - (bEncrypt.length % 16)];
+//
+//            //copy the old array into it
+//            System.arraycopy(bEncrypt, 0, padded, 0, bEncrypt.length);
+//            bEncrypt = padded;
+//        }
+//        SecretKeySpec skeySpec = new SecretKeySpec(bKey, "AES");
+//        Cipher cipher =  Cipher.getInstance("AES/ECB/NoPadding");
+//        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+//        byte[] encrypted = cipher.doFinal(bEncrypt);
+//        return Base64.encodeToString(encrypted, Base64.NO_WRAP).trim();
+//    }
 
-            //copy the old array into it
-            System.arraycopy(bEncrypt, 0, padded, 0, bEncrypt.length);
-            bEncrypt = padded;
-        }
-        SecretKeySpec skeySpec = new SecretKeySpec(bKey, "AES");
-        Cipher cipher =  Cipher.getInstance("AES/ECB/NoPadding");
-        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
-        byte[] encrypted = cipher.doFinal(bEncrypt);
-        return Base64.encodeToString(encrypted, Base64.NO_WRAP).trim();
-    }
-
-    public static String decrypt(String key, String encryptedBase64) throws Exception
-    {
-        byte[] bKey = key.getBytes("UTF-8");
-        byte[] encrypted = Base64.decode(encryptedBase64.trim(), Base64.NO_PADDING);
-        SecretKeySpec skeySpec = new SecretKeySpec(bKey, "AES");
-        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
-        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
-        byte[] decrypted = cipher.doFinal(encrypted);
-        return new String(decrypted, "UTF-8").trim();
-    }
+//    public static String decrypt(String key, String encryptedBase64) throws Exception
+//    {
+//        byte[] bKey = key.getBytes("UTF-8");
+//        byte[] encrypted = Base64.decode(encryptedBase64.trim(), Base64.NO_PADDING);
+//        SecretKeySpec skeySpec = new SecretKeySpec(bKey, "AES");
+//        Cipher cipher = Cipher.getInstance("AES/ECB/NoPadding");
+//        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+//        byte[] decrypted = cipher.doFinal(encrypted);
+//        return new String(decrypted, "UTF-8").trim();
+//    }
     public static boolean isLimitAdTrackingEnabled(final Context context){
         try {
             AdvertisingIdClient.Info idInfo = AdvertisingIdClient.getAdvertisingIdInfo(context);
@@ -291,15 +345,29 @@ public class AdLocusUtil {
         return true;
     }
     public static JSONArray getAppList(final Context context){
-        final PackageManager pm = context.getPackageManager();
-        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
-
         JSONArray a = new JSONArray();
-        for (ApplicationInfo packageInfo : packages) {
-            if ((packageInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0) continue;
+        int userStatement = Repository.getUserAndroidIdState();
+//        if(userStatement != Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT)return a;
 
-            a.put(packageInfo.packageName);
+        final PackageManager pm = context.getPackageManager();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (context.checkSelfPermission(Manifest.permission.QUERY_ALL_PACKAGES) == PackageManager.PERMISSION_GRANTED) {
+                List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+                for (ApplicationInfo packageInfo : packages) {
+                    if ((packageInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0) continue;
+
+                    a.put(packageInfo.packageName);
+                }
+            }
         }
+
+//        List<PackageInfo> list = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS);
+//        List<ApplicationInfo> packages = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+//        for (ApplicationInfo packageInfo : packages) {
+//            if ((packageInfo.flags & (ApplicationInfo.FLAG_SYSTEM | ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0) continue;
+//
+//            a.put(packageInfo.packageName);
+//        }
         return a;
     }
 
@@ -309,48 +377,48 @@ public class AdLocusUtil {
         long lastTrackTime = PreferenceManager.getDefaultSharedPreferences(context).getLong(PREFERENCE_COLLECTION_TRACKTIME, 0);
         return (System.currentTimeMillis() - lastTrackTime > NEXT_TRACK_TIME);
     }
-
+//
     public static void setCollectionData(Context context, int collectionData) {
         PreferenceManager.getDefaultSharedPreferences(context).edit()
                 .putInt(PREFERENCE_COLLECTION, collectionData)
                 .putLong(PREFERENCE_COLLECTION_TRACKTIME, System.currentTimeMillis())
                 .commit();
     }
-    public static String getUserAgent(Context context) {
-        String userAgent = "";
-        int versionCode=0;
-        try {
-            PackageInfo packageInfo = context.getPackageManager()
-                    .getPackageInfo(context.getPackageName(), 0);
-            versionCode=packageInfo.versionCode;
-        } catch (Exception e){
-
-        }
-        try{
-            try {
-                if (versionCode >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)  {
-                    userAgent = WebSettings.getDefaultUserAgent(context);
-                } else {
-                    userAgent = System.getProperty("http.agent");
-                }
-            } catch (Exception e) {
-                userAgent = System.getProperty("http.agent");
-            }
-
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0, length = userAgent.length(); i < length; i++) {
-                char c = userAgent.charAt(i);
-                if (c <= '\u001f' || c >= '\u007f') {
-                    sb.append(String.format("\\u%04x", (int) c));
-                } else {
-                    sb.append(c);
-                }
-            }
-            userAgent=sb.toString();
-        }catch (Exception e){
-
-        }
-
-        return userAgent;
-    }
+//    public static String getUserAgent(Context context) {
+//        String userAgent = "";
+//        int versionCode=0;
+//        try {
+//            PackageInfo packageInfo = context.getPackageManager()
+//                    .getPackageInfo(context.getPackageName(), 0);
+//            versionCode=packageInfo.versionCode;
+//        } catch (Exception e){
+//
+//        }
+//        try{
+//            try {
+//                if (versionCode >= Build.VERSION_CODES.JELLY_BEAN_MR1 && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1)  {
+//                    userAgent = WebSettings.getDefaultUserAgent(context);
+//                } else {
+//                    userAgent = System.getProperty("http.agent");
+//                }
+//            } catch (Exception e) {
+//                userAgent = System.getProperty("http.agent");
+//            }
+//
+//            StringBuffer sb = new StringBuffer();
+//            for (int i = 0, length = userAgent.length(); i < length; i++) {
+//                char c = userAgent.charAt(i);
+//                if (c <= '\u001f' || c >= '\u007f') {
+//                    sb.append(String.format("\\u%04x", (int) c));
+//                } else {
+//                    sb.append(c);
+//                }
+//            }
+//            userAgent=sb.toString();
+//        }catch (Exception e){
+//
+//        }
+//
+//        return userAgent;
+//    }
 }

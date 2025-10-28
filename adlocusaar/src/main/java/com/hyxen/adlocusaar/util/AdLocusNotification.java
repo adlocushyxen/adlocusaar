@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.NotificationCompat;
+//import android.support.v4.app.NotificationCompat;
 import android.view.View;
 import android.widget.RemoteViews;
+
+import androidx.core.app.NotificationCompat;
 
 import com.hyxen.adlocusaar.AdActivity;
 import com.hyxen.adlocusaar.obj.AdLocusAd;
@@ -159,7 +161,8 @@ public class AdLocusNotification
                 TaskStackBuilder.create(context)
                 .addNextIntentWithParentStack(AdLocusUtil.getNewPushBackgroundIntent(context))
                 .addNextIntent(notificationIntent)
-                .getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
+                        .getPendingIntent(requestCode, PendingIntent.FLAG_IMMUTABLE  | PendingIntent.FLAG_UPDATE_CURRENT);
+//                .getPendingIntent(requestCode, PendingIntent.FLAG_UPDATE_CURRENT);
         
         NotificationCompat.Builder b = new NotificationCompat.Builder(context);
         b.setAutoCancel(true);
@@ -348,7 +351,8 @@ public class AdLocusNotification
         intent.putExtra("id", id);
 
         intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_TASK);
-        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+//        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     public static void cancelNotification(Context context, int id) {

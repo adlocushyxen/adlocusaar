@@ -3,7 +3,7 @@ package com.hyxen.adlocusaar.view.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
+//import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,8 +14,11 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.annotation.RequiresApi;
+
 import com.hyxen.adlocusaar.BuildConfig;
 import com.hyxen.adlocusaar.R;
+import com.hyxen.adlocusaar.UserBaseData;
 import com.hyxen.adlocusaar.repository.Repository;
 import com.hyxen.adlocusaar.repository.data.RemoteResponse;
 import com.hyxen.adlocusaar.repository.data.request.FeedbackRequest;
@@ -29,9 +32,11 @@ import io.reactivex.functions.Consumer;
 
 public class AdLocusPresenter extends BasePresenter implements AdLocusContract.Presenter {
     private static final String TAG = AdLocusPresenter.class.getSimpleName();
-    private static final String TAG_SETTING_URL = BuildConfig.DEBUG ?
-            "http://test.adlocus_api.dev.hxcld.com/pref/set/?device_id=%1$s&app_key=%2$s" :
-            "http://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
+//    private static final String TAG_SETTING_URL = BuildConfig.DEBUG ?
+//            "https://test.adlocus_api.dev.hxcld.com/pref/set/?device_id=%1$s&app_key=%2$s" :
+//            "https://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
+
+    private static final String TAG_SETTING_URL ="https://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
 //private static final String TAG_SETTING_URL = "http://user.ad-locus.com/pref/set/?device_id=%1$s&app_key=%2$s";
     private AdLocusContract.View mView;
     private WebView mWebView;
@@ -142,7 +147,8 @@ public class AdLocusPresenter extends BasePresenter implements AdLocusContract.P
 
         if (mWebView == null)
             mWebView = view.findViewById(R.id.webView);
-        String url = String.format(TAG_SETTING_URL, AdLocusUtil.getEncodeDeviceId(context), appKey);
+//        String url = String.format(TAG_SETTING_URL, AdLocusUtil.getEncodeDeviceId(context), appKey);
+        String url = String.format(TAG_SETTING_URL, UserBaseData.getHashDeviceId(context), appKey);
         Logger.i(TAG, "Setting url = " + url);
         WebSettings settings = mWebView.getSettings();
 

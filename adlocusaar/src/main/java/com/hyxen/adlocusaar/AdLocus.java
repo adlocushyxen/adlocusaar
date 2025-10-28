@@ -12,9 +12,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
+//import android.support.annotation.NonNull;
+//import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
+
+//import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 
 import com.hyxen.adlocusaar.constants.Constants;
 import com.hyxen.adlocusaar.push.alarm.clock.PushAlarm;
@@ -30,6 +33,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.reactivex.annotations.NonNull;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 
@@ -73,6 +77,7 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
     private static void init(Context context) {
         Logger.i(TAG, "[Method] -> init()");
         Repository.init(context);
+
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
 //            JobScheduler scheduler = (JobScheduler) context.getSystemService(Context.JOB_SCHEDULER_SERVICE);
 //            ComponentName jobService = new ComponentName(context.getPackageName(), PushJobService.class.getName());
@@ -160,8 +165,8 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
 
     }
 
-    @Override
-    public void registerApp() {
+
+    private void registerApp() {
         Logger.i(TAG, "[Method] -> registerApp()");
         if (Repository.getRegisterState()) {
             Logger.i(TAG, "[registerApp] -> this firebase token already register");
@@ -215,7 +220,20 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
                     }
                 });
     }
-
+    @Override
+    public void registerApp(String fcmToken, @NonNull String fcmAppKey, @NonNull String appPackageName, @NonNull String appKey) {
+        mFcmToken = fcmToken;
+        mFcmAppKey = fcmAppKey;
+        mAppPackageName = appPackageName;
+        mAppKey = appKey;
+        Context context;
+        if (mContextRef == null || mContextRef.get() == null) {
+            Logger.d(TAG, "mContextRef is null");
+            return;
+        }
+        context = mContextRef.get();
+        registerApp();
+    }
     @Override
     public void checkUserStatement(String fcmToken, @NonNull String fcmAppKey, @NonNull String appPackageName, @NonNull String appKey) {
         mFcmToken = fcmToken;
@@ -234,7 +252,6 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 Repository.setUserAndroidIdState(Constants.TAG_ANDROID_ID_STATEMENT_STATE_GRANT);
-
             }
         }, new DialogInterface.OnClickListener() {
             @Override
@@ -249,6 +266,7 @@ public class AdLocus extends AdLocusHelp implements IAdLocus {
         })) {
             registerApp();
         }
+//        registerApp();
         PushAlarm.startPushAlarmFromInit(context);//設定Alarm定期回訪
     }
 

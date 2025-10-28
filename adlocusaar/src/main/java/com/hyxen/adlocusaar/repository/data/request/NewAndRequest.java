@@ -109,6 +109,9 @@ public class NewAndRequest {
     @JsonField
     private String locType;
 
+    @JsonField
+    private String post_notifications="1";
+
     public String getAdId() {
         return adId;
     }
@@ -371,5 +374,13 @@ public class NewAndRequest {
 
     public void setLocType(String locType) {
         this.locType = locType;
+    }
+
+    public String getPost_notifications() {
+        return post_notifications;
+    }
+
+    public void setPost_notifications(String post_notifications) {
+        this.post_notifications = post_notifications;
     }
 }

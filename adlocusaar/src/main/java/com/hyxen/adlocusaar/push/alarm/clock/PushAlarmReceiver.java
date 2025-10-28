@@ -34,8 +34,8 @@ import okhttp3.Response;
 public class PushAlarmReceiver extends BroadcastReceiver {
     public static final String FLAG_ACTION="com.hyxen.adlocusaar.push.alarm.clock.PushAlarm";
     private static final String TAG = PushAlarmReceiver.class.getSimpleName();
-    private static final String  debug_url="https://test.adlocus_api.dev.hxcld.com/devpush/json/local_db_and.json";
-    private static final String  normal_url="https://192.173.146.162/devpush/json/local_db_and.json";
+//    private static final String  debug_url="https://test.adlocus_api.dev.hxcld.com/devpush/json/local_db_and.json";
+//    private static final String  normal_url="https://192.173.146.162/devpush/json/local_db_and.json";
     private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static ConcurrentHashMap<String ,TreeMap<String,String>> map ;
     @Override
@@ -44,66 +44,66 @@ public class PushAlarmReceiver extends BroadcastReceiver {
         AdLocus.isAlarmDebug(context);
         AdLocus.isAlarmBotDebug(context);
         AdLocus.getInstance(context);
-        String url = AdLocus.isDebug()?debug_url:normal_url;
+//        String url = AdLocus.isDebug()?debug_url:normal_url;
         Logger.d(TAG, "[onReceive] start is debug:"+AdLocus.isAlarmDebug(context));
-        if(intent == null) return;
-        String action = intent.getAction();
-        if(action == null) return;
-        if(FLAG_ACTION.equals(action)) {
-            if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] init");
-            PushAlarm.startPushAlarm(context);
-            if(PushAlarm.isReceverFCM(context))return;
-            if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] isReceverFCM true");
-            OkHttpClient client = new OkHttpClient();
-
-
-
-            try{
-                if(AdLocus.isAlarmBotDebug()){
-                    TreeMap<String,String> map=new TreeMap<>();
-                    map.put("data", Repository.getHashDeviceId());
-                    map.put("time", sdf.format(new Date()));
-                    map.put("info", "alarm");
-                    PushBotDebug.push(map);
-                }
-
-                Request.Builder b=new Request.Builder();
-                Request request = b.url(url).build();
-                if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] get url "+url);
-                client.newCall(request).enqueue(new Callback() {
-                    @Override
-                    public void onFailure(Call call, IOException e) {
-                        if(AdLocus.isAlarmDebug()) e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onResponse(Call call, Response response) throws IOException {
-                        if(response.isSuccessful()){
-                            String dataS=new String(response.body().bytes(),"UTF-8");
-                            try {
-                                map=new ConcurrentHashMap<>();
-                                JSONObject dataJ=new JSONObject(dataS);
-                                if(dataJ.has("bc")){
-                                    JSONArray dataSubJA=dataJ.optJSONArray("bc");
-                                    for(int i=0;i<dataSubJA.length();i++){
-                                        checkData(context,dataSubJA.optJSONObject(i),Constants.TAG_FCM_GA);
-                                    }
-                                }
-//                                if(dataJ.has("city")){
-//                                    JSONArray dataSubJA=dataJ.optJSONArray("city");
+//        if(intent == null) return;
+//        String action = intent.getAction();
+//        if(action == null) return;
+//        if(FLAG_ACTION.equals(action)) {
+//            if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] init");
+//            PushAlarm.startPushAlarm(context);
+//            if(PushAlarm.isReceverFCM(context))return;
+//            if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] isReceverFCM true");
+//            OkHttpClient client = new OkHttpClient();
+//
+//
+//
+//            try{
+//                if(AdLocus.isAlarmBotDebug()){
+//                    TreeMap<String,String> map=new TreeMap<>();
+//                    map.put("data", Repository.getHashDeviceId());
+//                    map.put("time", sdf.format(new Date()));
+//                    map.put("info", "alarm");
+//                    PushBotDebug.push(map);
+//                }
+//
+//                Request.Builder b=new Request.Builder();
+//                Request request = b.url(url).build();
+//                if(AdLocus.isAlarmDebug()) Logger.d(TAG, "[onReceive] get url "+url);
+//                client.newCall(request).enqueue(new Callback() {
+//                    @Override
+//                    public void onFailure(Call call, IOException e) {
+//                        if(AdLocus.isAlarmDebug()) e.printStackTrace();
+//                    }
+//
+//                    @Override
+//                    public void onResponse(Call call, Response response) throws IOException {
+//                        if(response.isSuccessful()){
+//                            String dataS=new String(response.body().bytes(),"UTF-8");
+//                            try {
+//                                map=new ConcurrentHashMap<>();
+//                                JSONObject dataJ=new JSONObject(dataS);
+//                                if(dataJ.has("bc")){
+//                                    JSONArray dataSubJA=dataJ.optJSONArray("bc");
+//                                    for(int i=0;i<dataSubJA.length();i++){
+//                                        checkData(context,dataSubJA.optJSONObject(i),Constants.TAG_FCM_GA);
+//                                    }
 //                                }
-//                                if(dataJ.has("pt")){
-//                                    JSONArray dataSubJA=dataJ.optJSONArray("pt");
-//                                }
-                                AdLocus.getInstance().receverAlarmAD(context, map);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }catch (Exception e){e.printStackTrace();}
-        }
+////                                if(dataJ.has("city")){
+////                                    JSONArray dataSubJA=dataJ.optJSONArray("city");
+////                                }
+////                                if(dataJ.has("pt")){
+////                                    JSONArray dataSubJA=dataJ.optJSONArray("pt");
+////                                }
+//                                AdLocus.getInstance().receverAlarmAD(context, map);
+//                            } catch (JSONException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//            }catch (Exception e){e.printStackTrace();}
+//        }
     }
 
     private void checkData(Context context,JSONObject jsonObject,final String type) {

@@ -64,7 +64,8 @@ public class AdLocusManager
 		localeString = Locale.getDefault().toString();
 		// Log.d(ProMeUtil.PROME, "Locale is: " + localeString);
 
-		deviceIDHash = AdLocusUtil.getEncodedDeviceId(contextReference.get());
+//		deviceIDHash = AdLocusUtil.getEncodedDeviceId(contextReference.get());
+		deviceIDHash = UserBaseData.getHashDeviceId(contextReference.get());
 		// Log.d(ProMeUtil.PROME, "Hashed device ID is: " + deviceIDHash);
 
 		// Log.i(ProMeUtil.PROME, "Finished creating adWhirlManager");
@@ -86,15 +87,15 @@ public class AdLocusManager
 		return AdLocusUtil.URL_PULL_HTML_REQ + AdLocusUtil.getAdLocusParameters(context, key, mScreen, mActivityName, mAdLocusTargeting);
 	}
 
-	public String getJsonReq()
-	{
-		Context context = contextReference.get();
-		if (context == null)
-		{
-			return null;
-		}
-		return AdLocusUtil.URL_PULL_JSON_REQ + AdLocusUtil.getAdLocusParameters(context, key, mScreen, mActivityName, mAdLocusTargeting);
-	}
+//	public String getJsonReq()
+//	{
+//		Context context = contextReference.get();
+//		if (context == null)
+//		{
+//			return null;
+//		}
+//		return AdLocusUtil.URL_PULL_JSON_REQ + AdLocusUtil.getAdLocusParameters(context, key, mScreen, mActivityName, mAdLocusTargeting);
+//	}
 
 	public void fetchConfig()
 	{
@@ -154,7 +155,8 @@ public class AdLocusManager
 		if (jsonString == null || System.currentTimeMillis() >= timestamp + AUTH_TIMEOUT)
 		{
 			HxRequest r = new HxRequest(context, AdLocusUtil.URL_AUTH);
-			r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+//			r.setPostParameter("device_id", AdLocusUtil.getEncodedDeviceId(context));
+			r.setPostParameter("device_id", UserBaseData.getHashDeviceId(context));
 			r.setPostParameter("key", key);
 			r.setPostParameter("vid", AdLocusUtil.VERSION);
 			r.setPostParameter("v_str", AdLocusUtil.VERSION_STRING);

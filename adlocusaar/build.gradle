@@ -1,19 +1,24 @@
 apply plugin: 'com.android.library'
 
+
 android {
 //    compileSdkVersion 26
-    compileSdkVersion 29
+    namespace "com.hyxen.adlocusaar"
+    compileSdkVersion 35
 
 
 
     defaultConfig {
         //minSdkVersion 19
-        minSdkVersion 14
-        targetSdkVersion 26
-        versionCode 130
-        versionName "4.1.11"
+        minSdkVersion 26
+        targetSdkVersion 35
+        versionCode 173
+        versionName "4.1.53"
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // Library 模組要手動生成 BuildConfig 常量
+        buildConfigField "String", "VERSION_NAME", "\"4.1.53\""
+        buildConfigField "int", "VERSION_CODE", "173"
 
     }
 
@@ -23,20 +28,58 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
 }
+/*
+publishing {
+    publications {
+        bar(MavenPublication){
+            groupId "io.github.adlocushyxen"
+            artifactId "adlocusaar"
+            version "0.91-alpha"
+            artifact("$buildDir/outputs/aar/adlocusaar-release.aar")
+        }
+    }
+
+    repositories {
+        maven {
+            name "GithubPackages"
+            url uri("https://maven.pkg.github.com/adlocushyxen/adlocusaar")
+            credentials{
+                username = "adlocushyxen@gmail.com"
+                password = "***REMOVED***"
+            }
+        }
+    }
+}*/
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
+//    implementation 'androidx.annotation:annotation-jvm:1.7.1'
     testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+//    implementation 'com.android.support:appcompat-v7:26.1.0'
+//    testImplementation 'junit:junit:4.12'
+//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    // Security
+    implementation "androidx.security:security-crypto:1.1.0-alpha02"
+
 
     // Json parser
-    annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.6'
     implementation 'com.bluelinelabs:logansquare:1.3.7'
-    implementation "com.github.aurae.retrofit2:converter-logansquare:1.4.1"
+    annotationProcessor 'com.bluelinelabs:logansquare-compiler:1.3.7'
+    //implementation "com.github.aurae.retrofit2:converter-logansquare:1.4.1"
+    //implementation "com.squareup.retrofit2:converter-gson:2.9.0"
     // Http agent
     implementation 'com.squareup.retrofit2:retrofit:2.2.0'
     // RxJava
@@ -45,12 +88,21 @@ dependencies {
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.2.0'
 
     implementation 'com.squareup.okhttp3:okhttp:4.2.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.10.1'
+
+
 
 
     // Google
-    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+//    implementation 'com.google.android.gms:play-services-ads:15.0.1'
+    //implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    implementation 'com.google.android.gms:play-services-ads:23.0.0'
+
 
 }
-apply from: "bintrayUpload.gradle"
+//apply from: "bintrayUpload.gradle"
 //上傳指令
 //gradlew.bat bintrayUpload
+
+
+apply from: "publish.gradle"

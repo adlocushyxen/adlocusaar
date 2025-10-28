@@ -40,7 +40,7 @@ public interface AdLocusService {
             @Body RequestBody data
     );
 
-    @POST("fcm/ad/lbs_task")
+    @POST("fcm/ad_ab/lbs_task")
     Single<GetLbsTaskResponse> getLbsTask(
             @Body RequestBody data
     );
