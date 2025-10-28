@@ -1,0 +1,9 @@
+jdk:
+  - openjdk17
+
+android:
+  compileSdk: 35
+  buildTools: "35.0.0"
+
+install:
+  - ./gradlew clean assemble publishToMavenLocal -x test -x lint
