@@ -60,9 +60,16 @@ allprojects {
         maven { url 'https://jitpack.io' }  // ← 加這行
         maven {
             url uri("https://maven.pkg.github.com/adlocushyxen/adlocusaar")
+
+            def props = new Properties()
+            def localPropsFile = rootProject.file("local.properties")
+            if (localPropsFile.exists()) {
+                props.load(new FileInputStream(localPropsFile))
+            }
+
             credentials{
-                username = "adlocushyxen"
-                password = "***REMOVED***"
+                username = props.getProperty("github_user") ?: ""
+                password = props.getProperty("githubToken_use") ?: ""
             }
         }
 
